@@ -1,0 +1,7 @@
+MAILTO=qjhart@ucdavis.edu
+SHELL=/bin/bash
+. /etc/default/cg
+# 
+# m h  dom mon dow   command
+@hourly (g=$CG_GISDBASE; y=$(date +\%Y); d=$(date --iso); [[ -d $g/cimis-$y ]]  || mkdir $g/cimis-$y; rsync -a rsync://$CG_ARCHIVER/CA/$d $g/cimis-$y; (cd $g/cimis; if [[ ! -d $d ]] ; then ln -s ../cimis-$y/$d ;fi ))
+40 5 * * * GRASS_ADDON_PATH=$CG_BASE/grass/bin:$CG_BASE/grass/scripts GRASS_ADDON_ETC=$CG_BASE/grass/etc GRASS_BATCH_JOB=$CG_BASE/scripts/cg.daily.rc grass $CG_GISDBASE/cimis/`date --date=yesterday --iso`
