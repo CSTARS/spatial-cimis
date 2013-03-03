@@ -6,9 +6,9 @@ endif
 
 ca-goes.mk:=1
 
-goes-loc:=$(shell pkg-config --variable=goes_loc cg)
-ca-goes-loc:=$(shell pkg-config --variable=ca_goes_loc cg)
-ca-save-pattern:=$(shell pkg-config --variable=ca_save_pattern cg)
+goes-loc:=$(shell . /etc/default/cg; echo CG_GOES_LOC)
+ca-goes-loc:=$(shell . /etc/default/cg; echo CG_CA_GOES_LOC)
+ca-save-pattern:=$(shell . /etc/default/cg; echo CA_SAVE_PATTERN)
 
 mapsets:=$(shell cd ${goes-loc}; echo ${ca-save-pattern})
 

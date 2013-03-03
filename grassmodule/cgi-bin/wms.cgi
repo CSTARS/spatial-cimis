@@ -11,14 +11,12 @@ close GISRC;
 
 $ENV{GISBASE}=`pkg-config --variable=prefix grass`;
 chomp $ENV{GISBASE};
-$ENV{PATH}="/home/quinn/grass/scripts:/home/quinn/grass/bin:$ENV{GISBASE}/bin:$ENV{GISBASE}/scripts:$ENV{PATH}";
+my $addon=`. /etc/default/cg; echo CG_GRASS_ADDON_PATH`;
+chomp $ENV{PATH};
+$ENV{PATH}=sprintf "%s:%s",$addon,$ENV{PATH};
 $ENV{LD_LIBRARY_PATH}=`pkg-config --variable=libdir grass`;
 chomp $ENV{LD_LIBRARY_PATH};
 $ENV{GISRC}="$dir/gisrc";
-#$ENV{GISDBASE}="/var/lib/gdb";
-#$ENV{LOCATION_NAME}="CA";
-#$ENV{MAPSET}="www-data";
-#$ENV{GRASS_GUI}="text";
 
 my $q=new CGI;
 

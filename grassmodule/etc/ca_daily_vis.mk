@@ -5,8 +5,8 @@ include configure.mk
 endif
 
 ca-daily-vis.mk:=1
-ca-daily-vis-loc:=$(shell pkg-config --variable=ca_daily_vis_loc cg)
-interval:=$(shell pkg-config --variable=ca_daily_vis_interval cg)
+ca-daily-vis-loc:=$(shell . /etc/default/cg; echo CA_DAILY_VIS_LOC)
+interval:=$(shell . /etc/default/cg; echo CA_DAILY_VIS_INTERVAL)
 
 ifneq (${LOCATION_NAME},$(notdir ${ca-daily-vis-loc}))
   $(error LOCATION_NAME neq $(notdir ${ca-daily-vis-loc}))
