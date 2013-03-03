@@ -1,0 +1,17 @@
+#! /usr/bin/make -f
+
+ifndef configure.mk
+include configure.mk
+endif
+
+long_term_avg.mk:=1
+
+# Define some .PHONY raster interpolation targets
+$(foreach p,Rs_ltx et0_ltx,$(eval $(call grass_raster_shorthand,$(p))))
+
+$(rast)/Rs_ltx $(rast)/et0_ltx: $(rast)/%_ltx:
+	maps=`cg.proximate.mapsets --quote --delim='+' --past=7 --future=7 rast=$*`; \
+	cntp1=`echo $$maps | sed -e 's/[^+]//g' | wc -c`; \
+	r.mapcalc "$*_ltx=($$maps)/$$cntp1" &> /dev/null
+
+
