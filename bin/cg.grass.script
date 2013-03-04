@@ -1,0 +1,18 @@
+#! /bin/bash
+
+. /etc/default/cg;
+if [[ "$2" != "" ]] ; then
+  date=$2;
+else
+  date=`date --date=yesterday --iso`;
+fi
+
+export GRASS_ADDON_PATH=${CG_BASE}/grass/bin:${CG_BASE}/grass/scripts
+export GRASS_ADDON_ETC=${CG_BASE}/grass/etc 
+export GRASS_BATCH_JOB=$1
+
+#echo GRASS_BATCH_JOB=$1 grass ${CG_GISDBASE}/cimis/$date
+exec grass ${CG_GISDBASE}/cimis/$date
+
+
+
