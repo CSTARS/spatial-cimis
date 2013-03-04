@@ -4,8 +4,6 @@ ifndef configure.mk
 include configure.mk
 endif
 
-SQLITE:=sqlite3 ~/cimis.db
-
 zipcode.mk:=1
 
 parms:=Rs et0 K Rnl Tx Tn U2 Rso
@@ -24,7 +22,7 @@ $(etc)/zipcode.csv: $(rast)/Tn $(rast)/Tx $(rast)/U2 $(rast)/ea $(rast)/Gc $(ras
 	g.region -d;
 
 $(etc)/zipcode.db: $(etc)/zipcode.csv
-	echo -e "delete from zipcode_daily where d_date='$(MAPSET)';\n.mode csv\n.import $< zipcode_daily\n.quit" | $(SQLITE); \
+	echo -e "delete from zipcode_daily where d_date='$(MAPSET)';\n.mode csv\n.import $< zipcode_daily\n.quit" | ${sqlite}; \
 	if [[ $$? == 0 ]] ; then touch $@; fi 
 
 

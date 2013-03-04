@@ -11,8 +11,9 @@ include etxml_configure.mk
 $(shell g.gisenv set=ETXML_USER=${ETXML_USER})
 $(shell g.gisenv set=ETXML_PASSWD=${ETXML_PASSWD})
 
-# Some overview Links
-# use_dme:=1;	# Comment out to not use Daymet
+# ZIPCODE Database
+zipcode.db:=$(shell . /etc/default/cg; echo $$CG_ZIPCODE_DB)
+sqlite:=sqlite3 ${zipcode.db}
 
 GISDBASE:=$(shell g.gisenv get=GISDBASE)
 LOCATION_NAME:=$(shell g.gisenv get=LOCATION_NAME)
