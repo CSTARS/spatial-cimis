@@ -4,6 +4,7 @@
 
 # Read configuration variable file if it is present
 [ -r /etc/default/gvar_reader ] && . /etc/default/gvar_reader
+export GRASS_ADDON_PATH=${CG_GRASS_ADDON_PATH}
+export GRASS_ADDON_ETC=${CG_GRASS_ADDON_ETC}
 
-#exec r.in.gvar server=$GVAR_READER_SERVER port=$GVAR_READER_PORT > $GVAR_READER_STDOUT 2> $GVAR_READER_STDERR
 exec r.in.gvar server=$GVAR_READER_SERVER port=$GVAR_READER_PORT

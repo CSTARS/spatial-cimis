@@ -1,0 +1,5 @@
+#! /bin/bash
+cg sec=ca_daily_vis cmd=ca-daily-vis
+
+
+

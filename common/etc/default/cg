@@ -26,11 +26,12 @@ CA_DAILY_VIS_INTERVAL=60
 GVAR_READER_SERVER=10.28.200.5
 # Port on server
 GVAR_READER_PORT=21009
+GVAR_READER_MAPSET=gvar
 # Location of the Batch job to run
 GVAR_READER_BATCH_JOB=${CG_BASE}/grass/scripts/cg.gvar_reader.rc
 # Log files:
 GVAR_READER_STDOUT=${CG_BASE}/gvar_reader.stdout
 GVAR_READER_STDERR=${CG_BASE}/gvar_reader.stderr
-GVAR_READER_LOCATION_NAME=GOES15
+
 
 
