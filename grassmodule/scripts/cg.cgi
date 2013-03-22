@@ -3,7 +3,9 @@ use XML::Writer;
 use JSON;
 use DBI;
 
-my $dsn='dbi:SQLite:dbname=/home/quinn/cimis.db';
+my $zipdb=`source /etc/default/cg; echo \$CG_ZIPCODE_DB`;
+chomp $zipdb;
+my $dsn="dbi:SQLite:dbname=$zipdb";
 
 my %units = 
   (
