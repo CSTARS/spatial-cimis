@@ -4,13 +4,12 @@ use CGI::Carp qw(fatalsToBrowser);
 use File::Temp qw(tempdir);
 
 # Read configuration
-$CG_GISDBASE=`source /etc/default/cg; echo \$CG_GISDBASE`;
+$CG_GISDBASE=`. /etc/default/cg; echo \$CG_GISDBASE`;
 chomp $CG_GISDBASE;
-$CG_GRASS_ADDON_PATH=`source /etc/default/cg; echo \$CG_GRASS_ADDON_PATH`;
+$CG_GRASS_ADDON_PATH=`. /etc/default/cg; echo \$CG_GRASS_ADDON_PATH`;
 chomp $CG_GRASS_ADDON_PATH;
-$CG_GRASS_ADDON_ETC=`source /etc/default/cg; echo \$CG_GRASS_ADDON_ETC`;
+$CG_GRASS_ADDON_ETC=`. /etc/default/cg; echo \$CG_GRASS_ADDON_ETC`;
 chomp $CG_GRASS_ADDON_ETC;
-
 
 # Setup up GRASS
 my $dir=tempdir('/tmp/grass6-wms-XXXX',CLEANUP=>1);
@@ -18,7 +17,7 @@ open(GISRC,">$dir/gisrc") || die "Can't open GISRC file $dir/gisrc";
 printf GISRC "LOCATION_NAME: cimis\nMAPSET: apache\nGISDBASE: ${CG_GISDBASE}\nGRASS_GUI: text\n";
 close GISRC;
 
-$ENV{GISBASE}='/usr/lib64/grass-6.4.1'; #`pkg-config --variable=prefix grass`;
+$ENV{GISBASE}=`pkg-config --variable=prefix grass`;
 chomp $ENV{GISBASE};
 $ENV{PATH}="${CG_GRASS_ADDON_PATH}:$ENV{GISBASE}/bin:$ENV{GISBASE}/scripts:$ENV{PATH}";
 $ENV{GRASS_ADDON_ETC}=${CG_GRASS_ADDON_ETC};

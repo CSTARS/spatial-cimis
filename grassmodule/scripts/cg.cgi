@@ -3,7 +3,7 @@ use XML::Writer;
 use JSON;
 use DBI;
 
-my $zipdb=`source /etc/default/cg; echo \$CG_ZIPCODE_DB`;
+my $zipdb=`. /etc/default/cg; echo \$CG_ZIPCODE_DB`;
 chomp $zipdb;
 my $dsn="dbi:SQLite:dbname=$zipdb";
 
@@ -49,7 +49,7 @@ my %units =
 #% type: string
 #% description: Items of interest from (et0,Rs,K,Rnl,Tx,Tn,U2)
 #% multiple: yes
-#% answer: et0,et0,Rs,K,Rnl,Tx,Tn,U2,Rso
+#% answer: et0,Rs,K,Rnl,Tx,Tn,U2,Rso
 #% required : yes
 #%end
 #%option
