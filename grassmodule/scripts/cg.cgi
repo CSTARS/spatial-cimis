@@ -10,7 +10,6 @@ my $dsn="dbi:SQLite:dbname=$zipdb";
 my %units = 
   (
    ETo=>"[mm]",
-   et0=>"[mm]",
    Rs=>"[W/m^2]",
    Rso=>"[W/m^2]",
    K=>undef,
@@ -47,9 +46,9 @@ my %units =
 #%option
 #% key: item
 #% type: string
-#% description: Items of interest from (et0,Rs,K,Rnl,Tx,Tn,U2)
+#% description: Items of interest from (ETo,Rs,K,Rnl,Tx,Tn,U2)
 #% multiple: yes
-#% answer: et0,Rs,K,Rnl,Tx,Tn,U2,Rso
+#% answer: ETo,Rs,K,Rnl,Tx,Tn,U2,Rso
 #% required : yes
 #%end
 #%option
@@ -275,7 +274,7 @@ for (my $k=0; $k<= $#$in_points_3310; $k++) {
     foreach my $date (@date) {
 	my @err;
 	# First check we have this date
-	my $ans=`g.findfile mapset=$date file=et0 element=cellhd | grep ^name`;
+	my $ans=`g.findfile mapset=$date file=ETo element=cellhd | grep ^name`;
 	chomp $ans;
 
 	my ($x,$y);
@@ -283,7 +282,7 @@ for (my $k=0; $k<= $#$in_points_3310; $k++) {
 
 	# We could push both these errors, but I only check for date_not_found
 	
-	push @err,"date_not_found" if ($ans ne "name='et0'");
+	push @err,"date_not_found" if ($ans ne "name='ETo'");
 	# Check we're in CA
 	($x,$y)=@{$$in_points_3310[$k]};
 	($lon,$lat)=@{$$in_points_4269[$k]};
@@ -310,10 +309,6 @@ for (my $k=0; $k<= $#$in_points_3310; $k++) {
 		undef $val if $val eq '*';
 		# Quick fix for Carlos
 		my $name=$item[$i];
-		if ($name eq 'et0' and ! $etoFlag ) {
-		    $name = 'ETo';
-		    $etoFlag++;
-		}
 		$attr{units}=$units{$name} if $units{$name};
 		# Quick Fix for Radiance
 		$val *= 11.574074 if ($val and 

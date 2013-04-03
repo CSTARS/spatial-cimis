@@ -20,7 +20,7 @@ GetOptions(
 	  );
 
 # Get rasters of interest
-@rast=(qw(Tn Tx U2 ea Gc G K Rnl et0 FAO_Rso)) unless @rast;
+@rast=(qw(Tn Tx U2 ea Gc G K Rnl ETo FAO_Rso)) unless @rast;
 @rast = split(/,/,join(',',@rast));
 
 if ($mapset) {

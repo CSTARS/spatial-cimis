@@ -6,8 +6,8 @@ endif
 
 zipcode.mk:=1
 
-parms:=Rs et0 K Rnl Tx Tn U2 Rso
-#parms:=Rs et0
+parms:=Rs ETo K Rnl Tx Tn U2 Rso
+#parms:=Rs ETo
 
 .PHONY: info
 info::
@@ -16,9 +16,9 @@ info::
 .PHONY:zipcode
 
 zipcode: $(etc)/zipcode.db
-$(etc)/zipcode.csv: $(rast)/Tn $(rast)/Tx $(rast)/U2 $(rast)/ea $(rast)/Gc $(rast)/G $(rast)/K $(rast)/Rnl $(rast)/et0
+$(etc)/zipcode.csv: $(rast)/Tn $(rast)/Tx $(rast)/U2 $(rast)/ea $(rast)/Gc $(rast)/G $(rast)/K $(rast)/Rnl $(rast)/ETo
 	g.region rast=zipcode_2012@zipcode;
-	cg.zipcode.summary --noheader --nocount rast=Tn,Tx,U2,ea,Gc,G,K,Rnl,et0 > $@;\
+	cg.zipcode.summary --noheader --nocount rast=Tn,Tx,U2,ea,Gc,G,K,Rnl,ETo > $@;\
 	g.region -d;
 
 $(etc)/zipcode.db: $(etc)/zipcode.csv

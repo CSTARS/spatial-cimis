@@ -13,8 +13,8 @@ ys:=50.64
 .PHONY: zipcode point test
 
 zipcode:
-	time curl 'http://${old}/wms/wms.cgi?TIME=${start}:${stop}&VERSION=1.1&REQUEST=GetFeatureInfo&ZIPCODE=${zipcodes}' | xmlstarlet sel -t -v '//data/DataPoint/@zipcode|//data/DataPoint/et0' >  old.zipcode.xml
-	time curl 'http://${new}/wms/wms.cgi?TIME=${start}:${stop}&VERSION=1.1&REQUEST=GetFeatureInfo&ZIPCODE=${zipcodes}' | xmlstarlet sel -t -v '//data/DataPoint/@zipcode|//data/DataPoint/et0' > new.zipcode.xml
+	time curl 'http://${old}/wms/wms.cgi?TIME=${start}:${stop}&VERSION=1.1&REQUEST=GetFeatureInfo&ZIPCODE=${zipcodes}' | xmlstarlet sel -t -v '//data/DataPoint/@zipcode|//data/DataPoint/ETo' >  old.zipcode.xml
+	time curl 'http://${new}/wms/wms.cgi?TIME=${start}:${stop}&VERSION=1.1&REQUEST=GetFeatureInfo&ZIPCODE=${zipcodes}' | xmlstarlet sel -t -v '//data/DataPoint/@zipcode|//data/DataPoint/ETo' > new.zipcode.xml
 	diff -w -u old.zipcode.xml new.zipcode.xml 
 point:
 	time curl 'http://${old}/wms/wms.cgi?TIME=${start}:${stop}&VERSION=1.1&REQUEST=GetFeatureInfo&SRID=4269&BBOX=0,0,180,90&HEIGHT=90&WIDTH=180&X=${xs}&Y=${ys}' | xmlstarlet sel -t -v '//data/DataPoint/@lat|//data/DataPoint/@lon|//data/DataPoint/ETo|//data/DataPoint/Rs' > old.point.xml

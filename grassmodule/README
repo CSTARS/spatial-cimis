@@ -23,7 +23,7 @@ Example JSON Ouptut
 {
 "date":"2012-08-01",  // RFC-3339 Date
 "time":"2012-08-01 10:00:00-07:00", //RFC-3339 Seconds
-"et0":{"status":{ok,err,unk},...},
+"ETo":{"status":{ok,err,unk},...},
 ...
 "ServiceComponent":{"status":"{ok|err|unk}",...},
 }

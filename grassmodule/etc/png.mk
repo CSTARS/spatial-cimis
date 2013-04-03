@@ -52,8 +52,8 @@ define test
 echo Hello
 endef
 # Don't inlcude RHx anymore
-#html_layers:= Rso Rs K Rnl Tdew et0 Tx Tn U2 mc_et0_avg mc_et0_err_3
-html_layers:= Rso Rs K Rnl Tdew et0 Tx Tn U2
+#html_layers:= Rso Rs K Rnl Tdew ETo Tx Tn U2 mc_ETo_avg mc_ETo_err_3
+html_layers:= Rso Rs K Rnl Tdew ETo Tx Tn U2
 
 html: $(patsubst %,$(html)/%.png,$(html_layers)) $(patsubst %,$(html)/%.asc.gz,$(html_layers))
 #html:=${html} $(html)/station_compare.csv $(html)/station_compare_7.csv
@@ -139,11 +139,11 @@ $(eval $(call PNG,U2,Wind Speed, m/s))
 $(eval $(call PNG,Rs,Rs View,MJ/m^2 day))
 $(eval $(call PNG,Rso,Clear Sky Radiation,MJ/m^2 day))
 $(eval $(call PNG,K,Clear Sky Parameter, ))
-$(eval $(call PNG,et0,ET0 View, mm))
+$(eval $(call PNG,ETo,ETO View, mm))
 $(eval $(call PNG,Rnl,Long wave Radiation, MJ/m^2))
 
-$(eval $(call PNG,mc_et0_avg,ET0 Confidence Avg.,mm))
-$(eval $(call PNG,mc_et0_err_3,ET0 Confidence Std.,mm))
+$(eval $(call PNG,mc_ETo_avg,ETO Confidence Avg.,mm))
+$(eval $(call PNG,mc_ETo_err_3,ETO Confidence Std.,mm))
 
 
 

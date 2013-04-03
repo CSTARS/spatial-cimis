@@ -8,8 +8,8 @@ SQLITE:=sqlite3 ~/cimis.db
 
 zipcode.mk:=1
 
-#parms:=Rs et0 K Rnl Tx Tn U2 Rso
-parms:=Rs et0
+#parms:=Rs ETo K Rnl Tx Tn U2 Rso
+parms:=Rs ETo
 
 .PHONY: info
 info::
@@ -22,10 +22,10 @@ ifneq (${MAPSET},PERMANENT)
 .PHONY:zipcode
 
 zipcode: $(etc)/zipcode.db
-$(etc)/zipcode.db: $(rast)/Tn $(rast)/Tn_err $(rast)/Tx $(rast)/Tx_err $(rast)/U2 $(rast)/U2_err $(rast)/ea $(rast)/ea_err $(rast)/Gc $(rast)/G $(rast)/K $(rast)/Rnl $(etc)/tl $(rast)/et0 $(rast)/FAO_Rso
+$(etc)/zipcode.db: $(rast)/Tn $(rast)/Tn_err $(rast)/Tx $(rast)/Tx_err $(rast)/U2 $(rast)/U2_err $(rast)/ea $(rast)/ea_err $(rast)/Gc $(rast)/G $(rast)/K $(rast)/Rnl $(etc)/tl $(rast)/ETo $(rast)/FAO_Rso
 	g.region rast=zipcode_2012@zipcode;
-        (echo date,zipcode,Tn,Tx,U2,ea,Gc,G,K,Rnl,et0,FAO_Rso;
-        cimis.daily.zipcode.summary --nocount rast=Tn,Tx,U2,ea,Gc,G,K,Rnl,et0,FAO_Rso) > $*
+        (echo date,zipcode,Tn,Tx,U2,ea,Gc,G,K,Rnl,ETo,FAO_Rso;
+        cimis.daily.zipcode.summary --nocount rast=Tn,Tx,U2,ea,Gc,G,K,Rnl,ETo,FAO_Rso) > $*
         g.region -d;
 
 $(etc)/zipcode.db: $(etc)/zipcode.csv

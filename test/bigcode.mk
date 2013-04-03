@@ -15,8 +15,8 @@ clean:
 
 
 bigcode: ${old}.bigcode.xml ${new}.bigcode.xml
-	cat  ${old}.bigcode.xml | xmlstarlet sel -t -v '//data/DataPoint/@zipcode|//data/DataPoint/et0' >  ${old}.bigcode.txt
-	cat  ${new}.bigcode.xml | xmlstarlet sel -t -v '//data/DataPoint/@zipcode|//data/DataPoint/et0' >  ${new}.bigcode.txt
+	cat  ${old}.bigcode.xml | xmlstarlet sel -t -v '//data/DataPoint/@zipcode|//data/DataPoint/ETo' >  ${old}.bigcode.txt
+	cat  ${new}.bigcode.xml | xmlstarlet sel -t -v '//data/DataPoint/@zipcode|//data/DataPoint/ETo' >  ${new}.bigcode.txt
 	diff -w -u ${old}.bigcode.txt ${new}.bigcode.txt > ${new}.bigcode.diff
 
 ${old}.bigcode.xml:
