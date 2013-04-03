@@ -160,7 +160,7 @@ if ($ENV{GIS_OPT_ZIPCODE}) {
 } elsif ($ENV{GIS_OPT_POINT}) {
     my $point=$ENV{GIS_OPT_POINT};
     $in_points=$json->decode(sprintf('[%s]',$ENV{GIS_OPT_POINT}));
-    $cmd.=sprintf(" srid=%s,point=%s",$srid,$point);
+    $cmd.=sprintf(" srid=%s point=%s",$srid,$point);
 
 } else { #Old Style
     my $bbox=$ENV{GIS_OPT_BBOX};
@@ -258,6 +258,13 @@ if (@zipcode) {
 	$xml->endTag;
 	$xml->characters("\n");
     }
+    my @missing_dates=grep(! ($dates{$_}),@date);
+    foreach my $d (@missing_dates) {
+	foreach my $z (sort keys %zipcodes) {
+	    $xml->emptyTag("DataPoint",date=>$d,zipcode=>$z,err=>'date_not_found');
+	    $xml->characters("\n");
+	}
+    }
     # Now check the missing zipcodes
     grep { $xml->emptyTag("DataPoint",zipcode=>$_,err=>'not_found') 
 	       and $xml->characters("\n") unless $zipcodes{$_}} @zipcode;
@@ -268,20 +275,26 @@ for (my $k=0; $k<= $#$in_points_3310; $k++) {
     foreach my $date (@date) {
 	my @err;
 	# First check we have this date
-	my $ans=`g.findfile mapset=$date file=sretr element=cellhd | grep ^name`;
+	my $ans=`g.findfile mapset=$date file=et0 element=cellhd | grep ^name`;
 	chomp $ans;
-	push @err,"date_not_found" if ("name='sretr'" ne $ans);
+
+	my ($x,$y);
+	my ($lat,$lon);
+
+	# We could push both these errors, but I only check for date_not_found
 	
+	push @err,"date_not_found" if ($ans ne "name='et0'");
 	# Check we're in CA
-	my ($x,$y)=@{$$in_points_3310[$k]};
-	my ($lon,$lat)=@{$$in_points_4269[$k]};
+	($x,$y)=@{$$in_points_3310[$k]};
+	($lon,$lat)=@{$$in_points_4269[$k]};
 	$ans=`echo $x $y | r.what state\@2km`;
 	chomp $ans;
 	(undef,undef,undef,$ans)=split(/\|/,$ans);
 	push @err,"not_in_CA" unless ($ans eq 1);
-	
+
+	#$err[] could be join(','@err)
 	if (@err) {
-	    $xml->emptyTag("DataPoint",input_point=>$k,x=>$x,y=>$y,lon=>$lon,lat=>$lat,date=>$date,err=>join(',',@err));
+	    $xml->emptyTag("DataPoint",input_point=>$k,x=>$x,y=>$y,lon=>$lon,lat=>$lat,date=>$date,err=>$err[0]);
 	} else {
 	    $xml->startTag("DataPoint",input_point=>$k,x=>$x,y=>$y,lon=>$lon,lat=>$lat,date=>$date,err=>'');
 	    $xml->characters("\n");
