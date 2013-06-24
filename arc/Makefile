@@ -5,7 +5,7 @@ prd:=arc.prd.cimis.water.ca.gov
 # It is often not necessary to copy the root tar files, as they are mostly
 # symbolic links to the ~cimis files.
 root.files:=/etc/monit.d/gvar_reader /etc/init.d/gvar_reader \
-	/etc/default/cg /etc/default/gvar_reader
+	/etc/default/cg /etc/default/gvar_reader /etc/rsyncd.conf
 
 .PHONY: prd.root.tar prd.root.local
 prd.root.tar:
