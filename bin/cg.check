@@ -1,0 +1,100 @@
+#! /usr/bin/make -f 
+# Notes from 
+#http://larstobi.blogspot.com/2011/01/restrict-ssh-access-to-one-command-but.html
+key:=~/.ssh/cg_rsa
+
+po.token:=ak5SkBTXn9UCNqnjzSb77Pe7Q9g7EZ
+#po.user:=ujmFuJpU2hMjoXjfhHYq91MQoqxSyr
+po.url:=https://api.pushover.net/1/messages.json
+
+pushover:=false
+
+ifdef po.user
+define push
+curl -s -F 'token=${po.token}' -F 'user=${po.user}' -F "message=$(1)" ${po.url};
+endef
+else 
+define push
+endef
+endif
+
+#ssh_cmd is overwritten in remote ssh of this setup
+ssh_cmd:=def
+cmd:=$(filter def rec fail,${ssh_cmd})
+
+.PHONY: cmd
+cmd:${cmd}
+
+.PHONY: def rec push fail
+
+def:
+	@echo CIMIS GOES Check
+	@echo SSH:${ssh_cmd}
+	@echo cmd:${cmd}
+
+push:
+	$(call push,Hello)
+
+fail:
+	@echo -e "{\"status\":false}"; \
+	$(call push,Test Failure) \
+	exit 1;
+
+rec: pidfile:=/var/lock/subsys/swrgvardaemon
+rec: log:=/goesbox/log/ingest.log
+rec:
+	@mtime=`stat -c %y ${pidfile} 2>/dev/null`;\
+	if [[ $$? -ne 0 ]]; then mtime=; fi;\
+	ps=`ps --no-heading -C swrgvardaemon`;\
+	if [[ $$? -ne 0 ]]; then  ps=; fi; \
+	log=`find ${log} -mmin -10`; \
+	dir=`find /goesbox/data/images/realtime -maxdepth 0 -mmin -15`; \
+	status=true;\
+	if [[ -z $$mtime || -z $$ps || -z $$log || -z $$dir ]]; then \
+	  status=false; \
+	fi; \
+	echo -e "{\"status\":$$status,\"start\":\"$$mtime\","ps":\"$$ps\",\"log\":\"$$log\",\"dir\":\"$$dir\"}"; \
+	if [[ $$status = "false" ]]; then \
+	  exit 1; \
+	fi;
+
+arc:
+	. /etc/default/cg ; \
+	reader=`find $${GVAR_READER_STDOUT} -mmin -30`;\
+	goes_dir=`find $${CG_GOES_LOC} -maxdepth 1 -mmin -30`; \
+	daily_dir=`find $${CA_DAILY_VIS_LOC}/ca_daily_vis -maxdepth 1 -mmin -120`; \
+	status=true;\
+	if [[ -z $$reader || -z $$goes_dir || -z $$daily_dir ]]; then \
+	  status=false; \
+	fi; \
+	echo -e "{\"status\":$$status,\"reader\":\"$$reader\","goes_dir":\"$$goes_dir\",\"ca_daily_vis\":\"$$daily_dir\"}"; \
+	if [[ $$status = "false" ]]; then \
+	  exit 1; \
+	fi;
+
+remote.arc:remote.%:
+	@ans=`ssh -i ${key} qhart@$* 'cg.check $*'`; \
+	if [[ $$? -ne 0 ]]; then ans=; fi; \
+	if [[ -z $$ans ]]; then \
+	  status=false;\
+	fi; \
+	json="{\"status\":$$status,\"$*\":\"$$ans\"}"; \
+	echo $$json; \
+	if [[ $$status = "false" ]]; then \
+	  $(call push,$$json) \
+	  exit 1; \
+	fi;
+
+
+remote.rec remote.fail:remote.%:
+	@rec=`ssh -i ${key} qhart@rec.prd.cimis.water.ca.gov 'cg.check $*'`; \
+	if [[ $$? -ne 0 ]]; then rec=; fi; \
+	if [[ -z $$rec ]]; then \
+	  status=false;\
+	fi; \
+	json="{\"status\":$$status,\"rec\":\"$$rec\"}"; \
+	echo $$json; \
+	if [[ $$status = "false" ]]; then \
+	  $(call push,$$json) \
+	  exit 1; \
+	fi;
