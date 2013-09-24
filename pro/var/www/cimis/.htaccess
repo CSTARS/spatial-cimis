@@ -1,0 +1,3 @@
+RewriteEngine on
+RewriteRule (.*)/et0.png $1/ETo.png [L]
+RewriteRule (.*)/et0.asc.gz $1/ETo.asc.gz [L]
