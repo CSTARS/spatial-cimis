@@ -9,7 +9,6 @@ my $dsn="dbi:SQLite:dbname=$zipdb";
 
 my %units = 
   (
-   et0=>"[mm]",
    ETo=>"[mm]",
    Rs=>"[W/m^2]",
    Rso=>"[W/m^2]",
@@ -49,7 +48,7 @@ my %units =
 #% type: string
 #% description: Items of interest from (ETo,Rs,K,Rnl,Tx,Tn,U2)
 #% multiple: yes
-#% answer: et0,ETo,Rs,K,Rnl,Tx,Tn,U2,Rso
+#% answer: ETo,Rs,K,Rnl,Tx,Tn,U2,Rso
 #% required : yes
 #%end
 #%option
@@ -245,7 +244,6 @@ if (@zipcode) {
 	    my %attr;
 	    my $val=$r->{lc($name)};
 	    # Some other mismatches
-	    $val=$r->{eto} if ($name eq 'et0');
 	    $val=$r->{g}*0.0036 if ($name eq 'Rs');
 	    $val=$r->{gc}*0.0036 if ($name eq 'Rso');
 	    $attr{units}=$units{$name} if $units{$name};
@@ -255,6 +253,11 @@ if (@zipcode) {
 				   $name eq 'Rs' or $name eq 'Rso'));
 	    $xml->dataElement($name,$val,%attr);
 	    $xml->characters("\n");
+	    # Push an extra et0 for zipcode
+	    if ($name eq 'ETo') {
+		$xml->dataElement('et0',$r->{eto},%attr);
+		$xml->characters("\n");
+	    }
 	}
 	$xml->endTag;
 	$xml->characters("\n");
