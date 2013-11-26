@@ -38,9 +38,9 @@ clean::
 	g.remove $(1)_t$(2)_z$(3)_s$(4)
 
 #...maskmap=${state}
-$(rast)/$(1)_t$(2)_z$(3)_s$(4): ${vect}/etxml
+$(rast)/$(1)_t$(2)_z$(3)_s$(4): ${vect}/et
 	g.region -d b=-100 t=2500 tbres=1000; \
-	v.vol.rst --overwrite input=etxml wcolumn=${1} cellinp=${Z} \
+	v.vol.rst --overwrite input=et wcolumn=${1} cellinp=${Z} \
 	  maskmap=${state} where="${1}_qc in ('K','Y','')" \
 	  tension=$(2) zmult=$(3) smooth=$(4) \
 	  cellout=$(1)_t$(2)_z$(3)_s$(4) > /dev/null &>/dev/null; \
@@ -61,8 +61,8 @@ clean::
 
 $(eval $(call grass_vect_shorthand,z_normal))
 
-${vect}/z_normal:${vect}/etxml
-	g.copy --o vect=etxml,z_normal
+${vect}/z_normal:${vect}/et
+	g.copy --o vect=et,z_normal
 	echo 'update z_normal set day_air_tmp_min=day_air_tmp_min+${lr-day_air_tmp_min}*z/1000,day_air_tmp_max=day_air_tmp_max+${lr-day_air_tmp_max}*z/1000,day_wind_spd_avg=day_wind_spd_avg+${lr-day_wind_spd_avg}*z/1000,day_rel_hum_max=day_rel_hum_max+${lr-day_rel_hum_max}*z/1000,day_dew_pnt=day_dew_pnt+${lr-day_dew_pnt}*z/1000;' | ${SQLITE} ${db.connect.database} 
 	v.support map_name="Normalized CIMIS Station parameters" map=z_normal
 
