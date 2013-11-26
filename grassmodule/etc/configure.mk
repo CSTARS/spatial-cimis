@@ -6,10 +6,11 @@ ifndef GISBASE
   $(error Must be running in GRASS)
 endif
 
-# Set ETXML Username and password
+# Set ETXML Username,password (NOW APPKEY)
 include etxml_configure.mk
-$(shell g.gisenv set=ETXML_USER=${ETXML_USER})
-$(shell g.gisenv set=ETXML_PASSWD=${ETXML_PASSWD})
+#$(shell g.gisenv set=ETXML_USER=${ETXML_USER})
+#$(shell g.gisenv set=ETXML_PASSWD=${ETXML_PASSWD})
+$(shell g.gisenv set=ET_APPKEY=${ET_APPKEY})
 
 # ZIPCODE Database
 zipcode.db:=$(shell . /etc/default/cg; echo $$CG_ZIPCODE_DB)
