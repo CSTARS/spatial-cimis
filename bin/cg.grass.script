@@ -3,7 +3,7 @@
 . /etc/default/cg;
 
 if [[ "$2" != "" ]] ; then
-  grassdb=${CG_GISDBASE}/$2;
+  grassdb=${CG_GISDBASE}/cimis/$2;
 else
   date=`date --date=yesterday --iso`;
   grassdb=${CG_GISDBASE}/cimis/$date

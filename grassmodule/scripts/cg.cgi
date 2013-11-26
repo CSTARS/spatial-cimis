@@ -253,6 +253,11 @@ if (@zipcode) {
 				   $name eq 'Rs' or $name eq 'Rso'));
 	    $xml->dataElement($name,$val,%attr);
 	    $xml->characters("\n");
+	    # Push an extra et0 for zipcode
+	    if ($name eq 'ETo') {
+		$xml->dataElement('et0',$r->{eto},%attr);
+		$xml->characters("\n");
+	    }
 	}
 	$xml->endTag;
 	$xml->characters("\n");
