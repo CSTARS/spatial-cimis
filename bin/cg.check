@@ -3,11 +3,12 @@
 #http://larstobi.blogspot.com/2011/01/restrict-ssh-access-to-one-command-but.html
 key:=~/.ssh/cg_rsa
 
+# The PO.TOKEN defines the Spatial CIMIS Application
 po.token:=ak5SkBTXn9UCNqnjzSb77Pe7Q9g7EZ
-#po.user:=ujmFuJpU2hMjoXjfhHYq91MQoqxSyr
+# The default group is the spatial CIMIS delivery group
+po.user:=gDwyU6PXT8AcFSG7nhjk9PhjwLRtN6
 po.url:=https://api.pushover.net/1/messages.json
 
-pushover:=false
 
 ifdef po.user
 define push
