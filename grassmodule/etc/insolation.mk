@@ -136,6 +136,17 @@ tl_mapset:=${MM}-$(word ${DD},${tl_DD})@linke
 ${rast}/Bk ${rast}/Dk ${rast}/K ${rast}/G: ${rast}/ssha $(patsubst %,${rast}/%,$(kXXXX)) ${rast}/Bc ${rast}/Dc ${rast}/Gc
 	cg.daily.k ssha=ssha k="$(kXXXX)" tl="${tl_mapset}" Bc=Bc Dc=Dc Gc=Gc > /dev/null 2>/dev/null
 	@r.colors map=K rast=K@default_colors > /dev/null
+	# Special fix for years 2012,2013
+	y=`g.gisenv MAPSET | sed '-e s/-..-..//'`; \
+	if [[ $$y = 2012 || $$y = 2013 ]]; then \
+	  r.info K_patch > /dev/null 2> /dev/null; \
+	  if [[ $$? = 0 ]]; then \
+	    g.rename K,K_sat; \
+	    r.mapcalc K='min(1, max(0, if(isnull(K_sat), K_patch, K_sat)))';\
+	    r.colors map=K rast=K@default_colors > /dev/null; \
+	    r.mapcalc G=K*Gc; \
+	  fi; \
+	fi;
 
 ${rast}/Bc ${rast}/Dc ${rast}/Gc ${rast}/Trb ${rast}/Trd: ${rast}/ssha
 	@g.remove rast=Bc,Dc,Gc,Trb,Trd > /dev/null
