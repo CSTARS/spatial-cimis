@@ -141,7 +141,7 @@ ${rast}/Bk ${rast}/Dk ${rast}/K ${rast}/G: ${rast}/ssha $(patsubst %,${rast}/%,$
 	if [[ $$y = 2012 || $$y = 2013 ]]; then \
 	  r.info K_patch > /dev/null 2> /dev/null; \
 	  if [[ $$? = 0 ]]; then \
-	    g.rename K,K_sat; \
+	    g.remove K_sat; g.rename K,K_sat; \
 	    r.mapcalc K='min(1, max(0, if(isnull(K_sat), K_patch, K_sat)))';\
 	    r.colors map=K rast=K@default_colors > /dev/null; \
 	    r.mapcalc G=K*Gc; \
