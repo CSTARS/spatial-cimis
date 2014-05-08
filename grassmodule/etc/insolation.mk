@@ -99,13 +99,13 @@ $(etc)/max/vis$(1): $(rast)/vis$(1)_9
 	echo $$$$max > $$@
 
 $(rast)/p$(1): $(rast)/vis$(1)
-	maps=`cg.proximate.mapsets --quote --delim=',' --past=14 rast=vis$(1)`; \
-	r.mapcalc "p$(1)=min($$$$maps)" &> /dev/null
+	maps=`cg.proximate.mapsets --quote --delim=',' --past=14 rast=vis$(1)`;\
+	r.mapcalc "p$(1)=if(isnull(min($$$$maps)),vis$(1),min($$$$maps))" &> /dev/null
 
 $(rast)/cloud$(1): $(rast)/p$(1) $(etc)/max/vis$(1)
 	$(call NOMASK)
 	max=`cat $(etc)/max/vis$(1)`; \
-	r.mapcalc "cloud$(1)=int(if(isnull(p$(1)),if(vis$(1)>$$$$max,1,vis$(1)/$$$$max),if(vis$(1)>$$$$max,1,(vis$(1)-p$(1))/($$$$max-p$(1))))*255)" &> /dev/null
+	r.mapcalc "cloud$(1)=int(if(vis$(1)>$$$$max,1,(vis$(1)-p$(1))/($$$$max-p$(1)))*255)" &> /dev/null
 
 $(rast)/n$(1): $(rast)/p$(1) $(etc)/max/vis$(1)
 	$(call NOMASK) 
