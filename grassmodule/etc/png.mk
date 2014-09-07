@@ -85,6 +85,7 @@ $(html)/$(1).png: $(rast)/$(1)
 	GRASS_TRUECOLOR=TRUE GRASS_BACKGROUND_COLOR=FFFFFF \
 	GRASS_PNGFILE=${html}/$1.png d.mon start=PNG &> /dev/null; \
 	d.frame -e; d.rast $1; \
+	d.vect counties@PERMANENT color=white; \
 	d.legend -s at=7,52,2,8 map=$1 color=black; \
 	if [[ -n "$3" ]]; then \
 	 echo '$3' | d.text color=black at=2,2 size=3; \
