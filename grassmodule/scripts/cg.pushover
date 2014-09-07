@@ -1,0 +1,113 @@
+#!/bin/bash
+
+############################################################################
+#
+# MODULE:       cg.pushover for GRASS 6
+# AUTHOR(S):    Quinn Hart qjhart at ucdavis
+# PURPOSE:      Send messages to Pushover
+# COPYRIGHT:    (C) 2012 by Quinn Hart
+#
+#               This program is free software under the GNU General Public
+#               License (>=v2). Read the file COPYING that comes with GRASS
+#               for details.
+#
+#############################################################################
+
+#%Module
+#%  description: Sends Text messages via pushover
+#%  keywords: CIMIS Pushover
+#%End
+#%flag
+#% key: n
+#% description: dry-run
+#% guisection: Main
+#%end
+#%option
+#% key: message
+#% type: string
+#% description: Message to send 
+#% multiple: no
+#% required: yes
+#% guisection: Main
+#%end
+#%option
+#% key: token
+#% type: string
+#% description: Pushover Application Token.  If not included will look in the g.gisenv PUSHOVER_TOKEN
+#% required: no
+#% guisection: Main
+#%end
+#%option
+#% key: user
+#% type: string
+#% description: Pushover User. If not included with look in g.gisenv PUSHOVER_USER
+#% multiple: no
+#% required: no
+#% guisection: Main
+#%end
+#%option
+#% key: url
+#% type: string
+#% description: Pushover URL
+#% answer: https://api.pushover.net/1/messages.json
+#% multiple: no
+#% required: yes
+#% guisection: Main
+#%end
+
+if  [ -z "$GISBASE" ] ; then
+    echo "You must be in GRASS GIS to run this program."
+    exit 1
+fi
+
+# save command line
+if [ "$1" != "@ARGS_PARSED@" ] ; then
+    CMDLINE=`basename "$0"`
+    for arg in "$@" ; do
+        CMDLINE="$CMDLINE \"$arg\""
+    done
+    export CMDLINE
+    exec g.parser "$0" "$@"
+fi
+
+g.message -d message="$CMDLINE"
+
+# check if we have make installed
+if [ ! -x "`which curl`" ] ; then
+    g.message -e "'curl' is required, please install it first"
+    exit 1
+fi
+
+#######################################################################
+# name:     exitprocedure
+# purpose:  removes all temporary files
+#
+exitprocedure()
+{
+	g.message -e 'User break!'
+	exit 1
+}
+trap "exitprocedure" 2 3 15
+
+token=${GIS_OPT_TOKEN:-`g.gisenv PUSHOVER_TOKEN`}
+if [[ -z $token ]] ; then
+   g.message -e 'Pushover Token Not defined'
+   exit 1;
+fi
+
+user=${GIS_OPT_PUSHUSER:-`g.gisenv PUSHOVER_USER`}
+if [[ -z $user ]] ; then
+   g.message -e 'Pushover User not defined'
+   exit 1;
+fi
+
+msg=${GIS_OPT_MESSAGE};
+
+
+cmd="curl -s -F 'token=${token}' -F 'user=${user}' -F "message=${msg}" ${GIS_OPT_URL}"
+
+if [ $GIS_FLAG_N -eq 1 ] ; then
+   g.message -i message="$cmd";
+else
+   curl -s -F token=${token} -F user=${user} -F message="${msg}" ${GIS_OPT_URL} ;
+fi
