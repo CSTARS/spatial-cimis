@@ -20,7 +20,7 @@ info::
 define d_map 
 d.frame -e; \
 d.rast $1; \
-d.vect counties@PERMANENT color=white; \
+d.vect counties@PERMANENT type=boundary color=white fcolor=none; \
 d.font font=romand; \
 d.frame -c frame=legend at=7,52,2,17; \
 d.erase color=white; \
