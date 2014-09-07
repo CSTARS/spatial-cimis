@@ -47,13 +47,13 @@ fi;
 # Two g.mapsets because of a bug in g.mapset
 ${goes-loc}/$2/cellhd/ch1:${VIP}/$3
 	if [[ -f ${VIP}/$3 ]]; then \
+	g.mapset -c location=$(notdir ${goes-loc}) mapset=$2 || g.mapset location=$(notdir ${goes-loc}) mapset=$2; \
 	if (g.proj -f -j | grep -q "`gvar_inspector --proj --vip ${VIP}/$3`"); then \
-	  g.mapset -c location=$(notdir ${goes-loc}) mapset=$2 || g.mapset location=$(notdir ${goes-loc}) mapset=$2; \
 	  r.in.gvar -V filename=${VIP}/$3; \
 	  g.mapset location=$(notdir ${ca-daily-vis-loc}) mapset=${date}; \
 	else \
-	  cg.pushover msg="$3 Does not match g.proj"; \
-	  echo "$3 does not match g.proj"
+	  cg.pushover message="$3 Does not match g.proj"; \
+	  echo "$3 does not match g.proj";\
 	fi;\
 else \
   echo $3 not found; \
