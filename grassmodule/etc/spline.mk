@@ -41,7 +41,7 @@ clean::
 $(rast)/$(1)_t$(2)_z$(3)_s$(4): ${vect}/et
 	g.region -d b=-100 t=2500 tbres=1000; \
 	v.vol.rst --overwrite input=et wcolumn=${1} cellinp=${Z} \
-	  maskmap=${state} where="${1}_qc in ('K','Y','')" \
+	  maskmap=${state} where="${1}_qc in ('K','Y','H','')" \
 	  tension=$(2) zmult=$(3) smooth=$(4) \
 	  cellout=$(1)_t$(2)_z$(3)_s$(4) > /dev/null &>/dev/null; \
 	g.region -d
@@ -77,7 +77,7 @@ clean::
 $(rast)/z_$(1)_lr$(2)_t$(3)_s$(4): ${vect}/z_normal
 	$(call NOMASK)
 	v.surf.rst --overwrite input=z_normal \
-	  zcolumn=${1} where="${1}_qc in ('K','Y','')" \
+	  zcolumn=${1} where="${1}_qc in ('K','Y','H','')" \
 	  tension=$(3) smooth=$(4) \
 	  elev=$$(notdir $$@) #> /dev/null &>/dev/null;
 
