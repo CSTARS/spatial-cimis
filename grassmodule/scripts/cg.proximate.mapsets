@@ -44,7 +44,7 @@ if ($recurse eq 'years') {
 } else {
     my $start=DateCalc($today,"-$past days");
 #    $future+=1;
-    my $end=DateCalc($today,"+$future days");
+    my $end=DateCalc($today,"+$future days + 6 hours");
     my @dates=ParseRecur('0:0:0:1:0:0:0',$start,$start,$end);
     @mapsets=map(UnixDate($_,"%Y-%m-%d"),@dates);
 }
