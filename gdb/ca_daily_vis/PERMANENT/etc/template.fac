@@ -1,0 +1,54 @@
+Default Truncations:
+0.001	0.999
+
+7 Distributions:
+Normal
+G
+
+1	G_val	G_err	0.001	0.999
+
+Normal
+wind
+
+1	ws_val  ws_err	0.001	0.999
+
+Normal
+max_t
+
+1	max_at_val	max_at_err	0.001	0.999
+
+Normal
+min_t
+
+1	min_at_val	min_at_err	0.001	0.999
+
+Constant
+K
+
+1	K_val
+
+Constant
+GAM
+
+1	GAM_val
+
+Normal
+dewp
+
+1	dewp_val	dewp_err	0.001	0.999
+
+Correlation information
+0 -1 0 
+0 -1 0 
+0 -1 0 
+0 -1 0 
+0 -1 0 
+0 -1 0 
+0 -1 0 
+Correlation Matrix:
+1	0	0	0	0	
+0	1	0	0	0	
+0	0	1	0	0	
+0	0	0	1	0	
+0	0	0	0	1	
+2

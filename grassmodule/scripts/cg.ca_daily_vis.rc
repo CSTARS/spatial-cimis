@@ -1,0 +1,7 @@
+#! /bin/bash
+cg sec=ca_daily_vis cmd=ca-daily-vis
+eval 'g.gisenv'
+rsync -a $GISDBASE/$LOCATION_NAME/$MAPSET $GISDBASE/cimis/ --exclude=.gislock --exclude=.tmp
+
+
+
