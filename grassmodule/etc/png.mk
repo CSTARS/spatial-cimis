@@ -48,18 +48,25 @@ $(call d_map, $2, $3, $4) \
 d.mon stop=PNG &> /dev/null;
 endef
 
-define test
-echo Hello
-endef
 # Don't inlcude RHx anymore
 #html_layers:= Rso Rs K Rnl Tdew ETo Tx Tn U2 mc_ETo_avg mc_ETo_err_3
 html_layers:= Rso Rs K Rnl Tdew ETo Tx Tn U2
 
-html: $(patsubst %,$(html)/%.png,$(html_layers)) $(patsubst %,$(html)/%.asc.gz,$(html_layers))
-#html:=${html} $(html)/station_compare.csv $(html)/station_compare_7.csv
+html: $(patsubst %,$(html)/%.png,$(html_layers)) $(patsubst %,$(html)/%.asc.gz,$(html_layers)) ${html}/station.csv ${html}/zipcode.csv
 
 clean-html::
 	rm -rf $(html)
+
+${html}/zipcode.csv: ${etc}/zipcode.csv
+	cp $< $@
+
+${html}/station.csv:${etc}/station.csv
+	cp $< $@
+
+${etc}/station.csv: ${vect}/et
+	cols=`v.info -c et 2>/dev/null | grep day | cut -d'|' -f 2 | tr "\n" ',' | sed -e 's/.$$//'`;\
+	echo "x,y,z,station_id,date,$${cols}" > $@ ;\
+	v.out.ascii input=et fs=',' dp=2 columns=date,$${cols} >>$@
 
 define PNG
 .PHONY: $(1).png
@@ -73,9 +80,6 @@ $(html)/$(1).asc.gz: $(rast)/$(1)
 	@r.out.arc input=$(1) output=$(html)/$(1).asc &>/dev/null;
 	@gzip -f $(html)/$(1).asc;
 
-#	$$(call d_png $(html)/$(1).png,$(1),$(2),$(3),$(4));
-#	after d.rast...
-#	d.vect counties@PERMANENT color=white fcolor=none;
 $(html)/$(1).png: $(rast)/$(1)
 	@echo $(1).png
 	@[[ -d $(html) ]] || mkdir -p $(html);
@@ -85,7 +89,7 @@ $(html)/$(1).png: $(rast)/$(1)
 	GRASS_TRUECOLOR=TRUE GRASS_BACKGROUND_COLOR=FFFFFF \
 	GRASS_PNGFILE=${html}/$1.png d.mon start=PNG &> /dev/null; \
 	d.frame -e; d.rast $1; \
-	d.vect counties@PERMANENT color=white; \
+	d.vect counties@PERMANENT type=boundary color=white fcolor=none; \
 	d.legend -s at=7,52,2,8 map=$1 color=black; \
 	if [[ -n "$3" ]]; then \
 	 echo '$3' | d.text color=black at=2,2 size=3; \
@@ -145,6 +149,3 @@ $(eval $(call PNG,Rnl,Long wave Radiation, MJ/m^2))
 
 $(eval $(call PNG,mc_ETo_avg,ETO Confidence Avg.,mm))
 $(eval $(call PNG,mc_ETo_err_3,ETO Confidence Std.,mm))
-
-
-

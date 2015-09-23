@@ -25,6 +25,9 @@ YYYY:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(-([01]\d)(-([0123]\d))?)?
 MM:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(-([01]\d)(-([0123]\d))?)?$$/ and print $$3;')
 DD:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(-([01]\d)(-([0123]\d))?)?$$/ and print $$5;')
 
+# HTML Location
+htdocs:=/var/www/cimis
+
 ###################################################
 # Check for YYYY / MM / DD
 ##################################################
@@ -40,11 +43,12 @@ $(error MAPSET is not YYYY-MM*)
 endif
 endef
 
-define hasMM
+define hasDD
 ifndef DD
 $(error MAPSET is not YYYY-MM-DD)
 endif
 endef
+
 
 # Shortcut Directories
 loc:=$(GISDBASE)/$(LOCATION_NAME)
