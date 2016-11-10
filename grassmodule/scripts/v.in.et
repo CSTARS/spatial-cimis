@@ -144,7 +144,7 @@ sub makeStations {
 #% type: string
 #% description: Variables to include
 #% multiple: yes
-#% answer: day-asce-eto, day-precip, day-sol-rad-avg, day-vap-pres-avg, day-air-tmp-max, day-air-tmp-min, day-air-tmp-avg, day-rel-hum-max, day-rel-hum-min, day-rel-hum-avg, day-dew-pnt, day-wind-spd-avg
+#% answer: day-asce-eto,day-precip,day-sol-rad-avg,day-vap-pres-avg,day-air-tmp-max,day-air-tmp-min,day-air-tmp-avg,day-rel-hum-max,day-rel-hum-min,day-rel-hum-avg,day-dew-pnt,day-wind-spd-avg
 #% required : yes
 #%end
 #%option
