@@ -22,19 +22,25 @@ endif
 
 cimis.mk:=1
 
-$(foreach p,ETo,$(eval $(call grass_raster_shorthand,$(p))))
+$(foreach p,ETo FAO_ETo,$(eval $(call grass_raster_shorthand,$(p))))
 
 #######################################################################
 # Finally make the ETo calculation
 #######################################################################
 clean::
-	g.remove rast=ETo
+	g.remove rast=ETo,FAO_ETo 
 
 $(rast)/ETo: $(rast)/Rs $(rast)/Rnl $(rast)/ea $(rast)/Tx $(rast)/Tn $(rast)/U2 $(rast)/Tm $(rast)/es
 	DEL="(4098.17*0.6108*(exp(Tm*17.27/(Tm+237.3)))/(Tm+237.3)^2)"; \
 	GAM="psychrometric_constant@2km"; \
 	r.mapcalc ETo="(900.0*$$GAM/(Tm+273)*U2*(es-ea)+0.408*$$DEL*(Rs*(1.0-0.23)+Rnl))/($$DEL+$$GAM*(1.0+0.34*U2))" &>/dev/null;
 	@r.colors map=$(notdir $@) rast=$(notdir $@)@default_colors > /dev/null
+
+$(rast)/FAO_ETo: $(rast)/FAO_Rso $(rast)/ea $(rast)/Tx $(rast)/Tn $(rast)/U2 $(rast)/Tm $(rast)/es
+	DEL="(4098.17*0.6108*(exp(Tm*17.27/(Tm+237.3)))/(Tm+237.3)^2)"; \
+	GAM="psychrometric_constant@2km"; \
+	r.mapcalc FAO_ETo="(900.0*$$GAM/(Tm+273)*U2*(es-ea)+0.408*$$DEL*((FAO_Rso/K)*(1.0-0.23)+Rnl))/($$DEL+$$GAM*(1.0+0.34*U2))" &>/dev/null;
+	@r.colors map=$(notdir $@) rast=ETo@default_colors > /dev/null
 
 .PHONY:clean-rast
 

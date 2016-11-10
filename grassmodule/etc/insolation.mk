@@ -7,11 +7,13 @@ endif
 insolation.mk:=1
 
 # Check this is a YYYY-MM-DD setup
-$(call hasDD)
-
+#$(call hasDD)
+ifndef DD
+$(warning MAPSET ${YYYY}-${MM}-day${DD} is not YYYY-MM-DD)
+endif
 
 # Define some .PHONY raster interpolation targets
-$(foreach p,FAO_Rso Rso Rs K Dk Bk sretr ssetr ssha,$(eval $(call grass_raster_shorthand,$(p))))
+$(foreach p,FAO_Rso Rnl Rso Rs K Dk Bk sretr ssetr ssha,$(eval $(call grass_raster_shorthand,$(p))))
 
 # Sunrise/Sunset parameters are taken from r.solpos
 ${rast}/sretr ${rast}/ssetr ${rast}/ssha:
