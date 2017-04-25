@@ -1,5 +1,5 @@
 PATH=/home/cimis/bin:/bin:/usr/bin
-MAILTO=qjhart@ucdavis.edu
+MAILTO=cimissupport@water.ca.gov
 CIMIS_CONF=/home/cimis/config.sh
 # m h dom mon dow command
 @daily	(. $CIMIS_CONF; find $CG_GOES_LOC/* -maxdepth 0 -name 201\* -ctime +7 -print0 | xargs -0 rm -rf;)
