@@ -1,4 +1,5 @@
 #! /bin/shell 
+
 # The CIMIS GOES USER
 CG_USER=cimis
 CG_BASE=/home/cimis
@@ -14,24 +15,11 @@ CG_ZIPCODE_DB=${CG_BASE}/cimis.db
 # GOES15
 CG_GOES_LOC=${CG_GISDBASE}/GOES15
 
-# CA-GOES
-CG_CA_GOES_LOC=${CG_GISDBASE}/CA-GOES
-CA_SAVE_PATTERN='20*0'
-
 # CA Daily Vis Information
 CA_DAILY_VIS_LOC=${CG_GISDBASE}/ca_daily_vis
 CA_DAILY_VIS_INTERVAL=60
 
-# Gvar READER Information
-# Location of automated sciences GVAR server
-GVAR_READER_SERVER=10.28.200.5
-# Port on server
-GVAR_READER_PORT=21009
-GVAR_READER_MAPSET=gvar
-# Location of the Batch job to run
-GVAR_READER_BATCH_JOB=${CG_BASE}/grass/scripts/cg.gvar_reader.rc
-# Log files:
-GVAR_READER_STDOUT=${CG_BASE}/gvar_reader.stdout
-GVAR_READER_STDERR=${CG_BASE}/gvar_reader.stderr
+# GVAV RSYNC SERVER
+GVAR_SERVER=rec
 
 

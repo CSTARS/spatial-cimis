@@ -1,0 +1,8 @@
+PATH=/home/cimis/bin:/bin:/usr/bin
+MAILTO=qjhart@ucdavis.edu
+CIMIS_CONF=/home/cimis/config.sh
+# m h dom mon dow command
+@daily	(. $CIMIS_CONF; find $CG_GOES_LOC/* -maxdepth 0 -name 201\* -ctime +7 -print0 | xargs -0 rm -rf;)
+@daily (. $CIMIS_CONF; find $CG_BASE/VIP/* -daystart -mtime +7 -print0 | xargs -0 rm);
+*/30 * * * * cg.grass.script ~/grass/scripts/cg.ca_daily_vis.rc ca_daily_vis/$( date --iso)
+40 3,4,5,6,7,9,11 * * * cg.grass.script ~/grass/scripts/cg.daily.rc

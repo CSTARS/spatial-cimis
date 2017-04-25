@@ -6,10 +6,11 @@ endif
 
 ca-daily-vis.mk:=1
 
-goes-loc:=$(shell . /etc/default/cg; echo $$CG_GOES_LOC)
-ca-daily-vis-loc:=$(shell . /etc/default/cg; echo $$CA_DAILY_VIS_LOC)
-interval:=$(shell . /etc/default/cg; echo $$CA_DAILY_VIS_INTERVAL)
-cg_base:=$(shell . /etc/default/cg; echo $$CG_BASE)
+goes-loc:=$(shell . ${HOME}/config.sh; echo $$CG_GOES_LOC)
+ca-daily-vis-loc:=$(shell . ${HOME}/config.sh; echo $$CA_DAILY_VIS_LOC)
+interval:=$(shell . ${HOME}/config.sh; echo $$CA_DAILY_VIS_INTERVAL)
+cg_base:=$(shell . ${HOME}/config.sh; echo $$CG_BASE)
+gvar:=$(shell . ${HOME}/config.sh; echo $$GVAR_SERVER)
 
 ifneq (${LOCATION_NAME},$(notdir ${ca-daily-vis-loc}))
   $(error LOCATION_NAME neq $(notdir ${ca-daily-vis-loc}))
@@ -60,7 +61,7 @@ else \
 fi;
 
 ${VIP}/$3:
-	rsync -v rsync://goes-w.casil.ucdavis.edu/vip/$3 ${VIP} || true
+	rsync -v rsync://${gvar}/vip/$3 ${VIP} || true
 
 endef
 

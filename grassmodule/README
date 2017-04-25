@@ -1,18 +1,8 @@
-Unix Libraries
-proj4
-gdal
-libevent
-libevent-dev
-
 Perl Modules
 Geo::Proj4
 LWP::Simple
 
-export GH=/usr/lib/grass64
-export GRASS_ADDON=/home/quinn/grass6
-
 /home/quinn/cimis
-make GRASS_HOME=. MODULE_TOPDIR=${GH} DIST_DIR=${GRASS_ADDON} install
 
 $CIMIS_BASE/status?
 date={2012-10-10}&

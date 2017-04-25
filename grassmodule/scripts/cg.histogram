@@ -1,7 +1,7 @@
 #! /usr/bin/perl -w
 use JSON;
 
-my $zipdb=`. /etc/default/cg; echo \$CG_ZIPCODE_DB`;
+my $zipdb=`. ${HOME}/config.sh; echo \$CG_ZIPCODE_DB`;
 chomp $zipdb;
 
 my %units = 

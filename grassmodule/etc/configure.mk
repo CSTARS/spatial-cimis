@@ -13,7 +13,7 @@ include etxml_configure.mk
 $(shell g.gisenv set=ET_APPKEY=${ET_APPKEY})
 
 # ZIPCODE Database
-zipcode.db:=$(shell . /etc/default/cg; echo $$CG_ZIPCODE_DB)
+zipcode.db:=$(shell . ${HOME}/config.sh; echo $$CG_ZIPCODE_DB)
 sqlite:=sqlite3 ${zipcode.db}
 
 GISDBASE:=$(shell g.gisenv get=GISDBASE)

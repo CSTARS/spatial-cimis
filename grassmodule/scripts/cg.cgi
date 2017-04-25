@@ -3,7 +3,7 @@ use XML::Writer;
 use JSON;
 use DBI;
 
-my $zipdb=`. /etc/default/cg; echo \$CG_ZIPCODE_DB`;
+my $zipdb=`. /apps/cimis/config.sh; echo \$CG_ZIPCODE_DB`;
 chomp $zipdb;
 my $dsn="dbi:SQLite:dbname=$zipdb";
 
@@ -211,7 +211,7 @@ if ($srid==4269) {
 #exit 1;
 
 # Send XML document;
-my $xml=new XML::Writer(NEWLINES=>0,DATA_MODE=>0);
+my $xml=new XML::Writer(NEWLINES=>0,DATA_MODE=>0,OUTPUT=>'self');
 $xml->comment("Draft Spec for input");
 $xml->comment($cmd);
 $xml->startTag("data",dates=>join(',',@date),first_date=>$date[0],last_date=>$date[-1]);
@@ -329,3 +329,4 @@ for (my $k=0; $k<= $#$in_points_3310; $k++) {
 }
 $xml->endTag;
 
+print $xml->end;

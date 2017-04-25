@@ -1,6 +1,0 @@
-PATH=/home/cimis/bin:/bin:/usr/binPATH=/home/cimis/bin:/bin:/usr/bin
-MAILTO=qjhart@ucdavis.edu
-# m h dom mon dow command
-@hourly	(. /etc/default/cg; find $CG_GOES_LOC -maxdepth 1 -name 201\* -ctime +7 -print0 | xargs -0 rm -rf;)
-*/30 * * * * cg.grass.script ~/grass/scripts/cg.ca_daily_vis.rc ca_daily_vis/$( date --iso)
-
