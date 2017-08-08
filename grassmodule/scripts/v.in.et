@@ -39,7 +39,7 @@ sub stations {
       $_->{'decimal-lng'}=$lon;
       $_->{east}=$e;
       $_->{north}=$n;
-      $stations->{$id}=$_;
+      $stations->{$id}=$_ if ($_->{IsActive} eq 'True');
   }
   $stations;
 }
@@ -59,7 +59,7 @@ sub data {
       );
 
   my $res = $ua->get($link);
-  die $res->status_line unless ($res->is_success);
+  die sprintf("%s failed: s",$link,$res->status_line) unless ($res->is_success);
   my $json=decode_json $res->decoded_content;
 
   my $h={};
