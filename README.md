@@ -31,20 +31,32 @@ installed on these systems.  Use the following commands to install the
 required packages on the production machines.
 
 ``` bash
-sudo yum install sqlite rsync wget curl perl cronie daemonize \
-perl-JSON perl-Date-Manip perl-TimeDate perl-Test-Pod \
-perl-SOAP-Lite perl-XML-Simple 
-sudu yum install geos geos-devel grass grass-devel
+sudo dnf update
+sudo dnf install sqlite rsync wget curl perl cronie daemonize \
+    perl-JSON perl-Date-Manip perl-TimeDate perl-Test-Pod \
+    perl-SOAP-Lite perl-XML-Simple
+sudo dnf install geos geos-devel grass grass-devel gcc
 ```
 
 ## Package Geo::Proj4
 The Geo::Proj4 module is not packaged as an rpm, we need to do this for the testing and production machines.
 
 ``` bash
-sudo yum install cpanspec rpm-build;
+sudo dnf install cpanspec rpm-build proj-devel
+    mkdir -p rpmbuild/BUILD
+    mkdir -p rpmbuild/BUILDROOT
+    mkdir -p rpmbuild/RPMS
+    mkdir -p rpmbuild/SOURCES
+    mkdir -p rpmbuild/SPECS
+    mkdir -p rpmbuild/SRPMS
+    vi ~/.rpmmacros
+        %packager George Scheer <gjscheer@ucdavis.edu>
+    	%vendor UC Davis
+	    %_topdir /home/gjscheer/rpmbuild
+        %__perl_requires %{nil}
 cpanspec Geo::Proj4
 mv perl-Geo-Proj4.spec ~/rpmbuild/SPECS/
-mv Geo-Proj4-1.05.tar.gz ~/rpmbuild/SOURCES/
+mv Geo-Proj4-1.09.tar.gz ~/rpmbuild/SOURCES/
 rpmbuild -ba ~/rpmbuild/SPECS/perl-Geo-Proj4.spec 
 ```
 
