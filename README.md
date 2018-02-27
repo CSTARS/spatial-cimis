@@ -43,17 +43,12 @@ The Geo::Proj4 module is not packaged as an rpm, we need to do this for the test
 
 ``` bash
 sudo dnf install cpanspec rpm-build proj-devel
-    mkdir -p rpmbuild/BUILD
-    mkdir -p rpmbuild/BUILDROOT
-    mkdir -p rpmbuild/RPMS
-    mkdir -p rpmbuild/SOURCES
-    mkdir -p rpmbuild/SPECS
-    mkdir -p rpmbuild/SRPMS
-    vi ~/.rpmmacros
-        %packager George Scheer <gjscheer@ucdavis.edu>
-    	%vendor UC Davis
-	    %_topdir /home/gjscheer/rpmbuild
-        %__perl_requires %{nil}
+mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+vi ~/.rpmmacros
+    %packager George Scheer <gjscheer@ucdavis.edu>
+    %vendor UC Davis
+	%_topdir /home/gjscheer/rpmbuild
+    %__perl_requires %{nil}
 cpanspec Geo::Proj4
 mv perl-Geo-Proj4.spec ~/rpmbuild/SPECS/
 mv Geo-Proj4-1.09.tar.gz ~/rpmbuild/SOURCES/
