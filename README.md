@@ -1,5 +1,9 @@
 # Spatial CIMIS
 
+For 2018 spatial CIMIS will begin processing the next generation GOES-16/17
+data.  This will require new infrastructure (new dish and servers) and a slightly
+modified spatial CIMIS toolset to process the new spatial data.
+
 In November 2011, California Department of Water Resources have
 contracted for a revision to the current [Spatial
 CIMIS]([http://wwwcimis.water.ca.gov/cimis/cimiSatSpatialCimis.jsp)
@@ -11,12 +15,8 @@ mostly GRASS GIS functions.
 
 # Development Machines
 
-Here are some short descriptions of the packages needed to run the
-CIMIS application.  We have two machines, the testing/production
-machines, and the development machines.  The idea is to compile the
-spatial-cimis program on development machines, and then copy binaries
-unto the test/production machines.  This limits extraneous files on
-the production machines.
+These instructions are for setting up the spatial CIMIS program for either
+Ubuntu (UCD) or Red Hat / Fedora (DWR) based servers.
 
 Spatial CIMIS is run primarily with the GRASS GIS program.  However,
 there are some additional steps that need to take place. These vary
@@ -28,8 +28,9 @@ The development machine needs to include packages that allow both the
 operation of the software, but also the compilation of the Spatial
 GOES code.  Therefore additional development packages need to be
 installed on these systems.  Use the following commands to install the
-required packages on the production machines.
+required packages.
 
+Red Hat / Fedora
 ``` bash
 sudo dnf update
 sudo dnf install sqlite rsync wget curl perl cronie daemonize \
@@ -38,6 +39,14 @@ sudo dnf install sqlite rsync wget curl perl cronie daemonize \
 sudo dnf install geos geos-devel grass grass-devel gcc
 ```
 
+Ubuntu
+```
+sudo apt update;sudo apt upgrade
+sudo apt install sqlite rsync wget curl perl cron daemon \
+    libjson-pp-perl libdate-manip-perl libdatetime-perl libtest-pod-perl \
+    libsoap-lite-perl libxml-simple-perl
+sudo apt install libgeos-3.5.0 libgeos-dev grass grass-dev gcc
+```
 ## Package Geo::Proj4
 The Geo::Proj4 module is not packaged as an rpm, we need to do this for the testing and production machines.
 
