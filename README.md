@@ -30,7 +30,7 @@ GOES code.  Therefore additional development packages need to be
 installed on these systems.  Use the following commands to install the
 required packages.
 
-Red Hat / Fedora
+### Red Hat / Fedora
 ``` bash
 sudo dnf update
 sudo dnf install sqlite rsync wget curl perl cronie daemonize \
@@ -39,40 +39,24 @@ sudo dnf install sqlite rsync wget curl perl cronie daemonize \
 sudo dnf install geos geos-devel grass grass-devel gcc
 ```
 
-Ubuntu
-```
+### Ubuntu
+``` bash
 sudo apt update;sudo apt upgrade
 sudo apt install sqlite rsync wget curl perl cron daemon \
     libjson-pp-perl libdate-manip-perl libdatetime-perl libtest-pod-perl \
     libsoap-lite-perl libxml-simple-perl
 sudo apt install libgeos-3.5.0 libgeos-dev grass grass-dev gcc
 ```
-## Package Geo::Proj4
-The Geo::Proj4 module is not packaged as an rpm, we need to do this for the testing and production machines.
 
-``` bash
-sudo dnf install cpanspec rpm-build proj-devel
-mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
-nano ~/.rpmmacros
-    %packager Your Name <your@email>
-    %vendor <your org>
-	%_topdir /home/<your home>/rpmbuild
-    %__perl_requires %{nil}
-cpanspec Geo::Proj4
-mv perl-Geo-Proj4.spec ~/rpmbuild/SPECS/
-mv Geo-Proj4-1.09.tar.gz ~/rpmbuild/SOURCES/
-rpmbuild -ba ~/rpmbuild/SPECS/perl-Geo-Proj4.spec 
-```
-
-## Install a patched version of proj.4
-Follow the instructions for installing a patched version of proj at https://github.com/qjhart/qjhart.proj-goes-patch.
+## Package Geo::Proj4 and patching proj.4
+This module is not required for GOES-16/17 processing.
 
 ## Install the grass add-ons
 
 Follow the instructions for installing a patched version of proj at
 https://github.com/qjhart/qjhart.grass-addons.  After these are
-compiled you will have two binaries, r.solpos and r.in.gvar in
-~/grass/bin.
+compiled you will have two binaries, `r.solpos` and `r.in.gvar` in
+``~/grass/bin`.
 
 ## Install Spatial CIMIS
 
