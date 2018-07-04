@@ -1,0 +1,58 @@
+#! /usr/bin/perl -w
+use JSON;
+
+my $zipdb=`. ${HOME}/config.sh; echo \$CG_ZIPCODE_DB`;
+chomp $zipdb;
+
+my %units = 
+  (
+   ETo=>"[mm]",
+   Rs=>"[W/m^2]",
+   Rso=>"[W/m^2]",
+   K=>undef,
+   Rnl=>"[W/m^2]",
+   Tx=>"[C]",
+   Tn=>"[C]",
+   U2=>"[m/s]",
+  );
+
+
+#%Module
+#%  description: Get histograms for specific dates and times.
+#%  keywords: CIMIS,etxml,evapotranspiration
+#%End
+#%option
+#% key: input
+#% type: string
+#% description: Rasters to include (will use same bounds)
+#% multiple: yes
+#% answer: ETo
+#% required : yes
+#%end
+
+if ( !$ENV{'GISBASE'} ) {
+    die "You must be in GRASS GIS to run this program.\n";
+}
+
+if (!defined($ARGV[0]) or ($ARGV[0] ne '@ARGS_PARSED@')) {
+    my $arg = "";
+    for (my $i=0; $i < @ARGV;$i++) {
+        $arg .= " $ARGV[$i] ";
+    }
+    system("$ENV{GISBASE}/bin/g.parser $0 $arg");
+    exit;
+}
+
+my $json = JSON->new->allow_nonref;
+
+open(STATS, "r.stats -1 input=$ENV{GIS_OPT_INPUT} |")
+    or die "Can't start r.stats: $!";
+
+while(<STATS>)
+{
+    my @row=split(' ',$_);
+    for(my $i=0; $i<$#row; $i++) {
+	$row[i]/
+    print "$_";
+}
+close(STATS);
