@@ -1,11 +1,14 @@
 *~
 \#*\#
 
-# Grass datasets
+# Grass datasets and files
+.tmp/
+.bashrc
+.bash_history
 gdb/solar/20??????
 gdb/solar/quinn
 gdb/solar/cimis
+gdb/cimis/20??-??-??
 gdb/cimis/20??????
 gdb/cimis/quinn
 gdb/cimis/cimis
-

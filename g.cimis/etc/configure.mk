@@ -17,9 +17,9 @@ LOCATION_NAME:=$(shell g.gisenv get=LOCATION_NAME)
 MAPSET:=$(shell g.gisenv get=MAPSET)
 
 # Check on whether the MAPSET is a day, month, or otherwise
-YYYY:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(-([01]\d)(-([0123]\d))?)?$$/ and print $$1;')
-MM:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(-([01]\d)(-([0123]\d))?)?$$/ and print $$3;')
-DD:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(-([01]\d)(-([0123]\d))?)?$$/ and print $$5;')
+YYYY:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(([01]\d)(([0123]\d))?)?$$/ and print $$1;')
+MM:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(([01]\d)(([0123]\d))?)?$$/ and print $$3;')
+DD:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(([01]\d)(([0123]\d))?)?$$/ and print $$5;')
 
 # HTML Location
 htdocs:=/var/www/cimis
@@ -101,11 +101,11 @@ endef
 # MASK defines
 ##############################################################################
 define MASK
-	(g.findfile element=cellhd file=MASK || g.copy rast=state@2km,MASK) > /dev/null;
+	(g.findfile element=cellhd file=MASK > /dev/null || g.copy --quiet raster=state@2km,MASK);
 endef
 
 define NOMASK
-	if ( g.findfile element=cellhd file=MASK > /dev/null); then g.remove MASK &>/dev/null; fi;
+	if ( g.findfile element=cellhd file=MASK > /dev/null); then g.remove -f --quiet type=rast name=MASK; fi;
 endef
 
 

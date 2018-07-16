@@ -1,4 +1,4 @@
-#! /usr/bin/make -f 
+#! /usr/bin/make -f
 
 ifndef configure.mk
 include configure.mk
@@ -12,10 +12,6 @@ ifndef insolation.mk
 include insolation.mk
 endif
 
-ifndef zipcode.mk
-include zipcode.mk
-endif 
-
 ifndef png.mk
 include png.mk
 endif
@@ -28,7 +24,7 @@ $(foreach p,ETo FAO_ETo,$(eval $(call grass_raster_shorthand,$(p))))
 # Finally make the ETo calculation
 #######################################################################
 clean::
-	g.remove rast=ETo,FAO_ETo 
+	g.remove rast=ETo,FAO_ETo
 
 $(rast)/ETo: $(rast)/Rs $(rast)/Rnl $(rast)/ea $(rast)/Tx $(rast)/Tn $(rast)/U2 $(rast)/Tm $(rast)/es
 	DEL="(4098.17*0.6108*(exp(Tm*17.27/(Tm+237.3)))/(Tm+237.3)^2)"; \

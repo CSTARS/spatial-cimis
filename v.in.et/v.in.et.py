@@ -11,10 +11,10 @@ sub stations {
   $ua->default_header('Accept' => "application/json");
 
 #  my $proj = Geo::Proj4->new(init => "espg:3310");
-#+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs 
+#+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs
   my $proj = Geo::Proj4->new
-      (proj=>"aea",lat_1=>34, lat_2=>40.5, lat_0=>0, lon_0=>-120, 
-       x_0=>0, y_0=>-4000000, ellps=>'GRS80', datum=>'NAD83', 
+      (proj=>"aea",lat_1=>34, lat_2=>40.5, lat_0=>0, lon_0=>-120,
+       x_0=>0, y_0=>-4000000, ellps=>'GRS80', datum=>'NAD83',
        units=>'m',no_defs=>'');
 
   my $link=sprintf
@@ -22,7 +22,8 @@ sub stations {
        '%s/station?appKey=%s',
        $config->{'api'},$config->{'appKey'}
       );
-    
+
+  system "g.message -d message=\"$link\"";
   my $res = $ua->get($link);
   die $res->status_line unless ($res->is_success);
   my $json=decode_json $res->decoded_content;
@@ -54,12 +55,13 @@ sub data {
       (
        '%s/data?appKey=%s&targets=%s&dataItems=%s&startDate=%s&endDate=%s&unitOfMeasure=M',
        $config->{'api'},$config->{'appKey'},
-       $config->{stationIds},$config->{items},
+       $config->{stations},$config->{items},
        $config->{date},$config->{date}
       );
 
+  system "g.message -d message=\"$link\"";
   my $res = $ua->get($link);
-  die sprintf("%s failed: s",$link,$res->status_line) unless ($res->is_success);
+  die sprintf("%s failed: %s",$link,$res->status_line) unless ($res->is_success);
   my $json=decode_json $res->decoded_content;
 
   my $h={};
@@ -87,14 +89,15 @@ sub makeStations {
 	      'isActive varchar(1)','isEtoStation varchar(1)'
 	);
 
-    my $cmd=sprintf("v.in.ascii %s out=%s cat=1 x=2 y=3 z=4 columns='%s'",
+    my $cmd=sprintf("v.in.ascii %s input=- output=%s cat=1 x=2 y=3 z=4 columns='%s'",
 		    $ENV{GIS_FLAG_OVERWRITE}?'--overwrite':'',
 		    $config->{output},join(',',@cols));
-    
+
+    system "g.message -d message=\"$cmd\"";
     open(V_IN_ASCII, "| $cmd") or die "Couldn't fork: $!\n";
     foreach (sort {$a<=>$b} keys %$stations) {
 	my $s=$stations->{$_};
-	
+
 	# Elevation should be in meters
 	my @v=($_,$s->{east},$s->{north},$s->{Elevation}*0.3048,
 	       $s->{Name},$s->{City}||'',$s->{RegionalOffice}||'',
@@ -104,7 +107,7 @@ sub makeStations {
 #	       $s->{'ConnectDate'}||'',$s->{'DisconnectDate'}||'',
 	       $s->{'isActive'}||'',$s->{'isEtoStation'}||'F'
 	    );
-	
+
 #	print join("|",@v),"\n";
 	print V_IN_ASCII join("|",@v),"\n";
     }
@@ -123,6 +126,10 @@ sub makeStations {
 #%flag
 #% key: overwrite
 #% description: Overwrite
+#%end
+#%flag
+#% key: verbose
+#% description: Verbose Reporting
 #%end
 #%option
 #% key: api
@@ -148,7 +155,7 @@ sub makeStations {
 #% required : yes
 #%end
 #%option
-#% key: stationIds
+#% key: stations
 #% type: string
 #% description: Stations to include
 #% multiple: yes
@@ -204,11 +211,12 @@ $config->{output}=$ENV{GIS_OPT_OUTPUT};
 $config->{date}=$ENV{GIS_OPT_DATE}||$mapset;
 $config->{items}=$ENV{GIS_OPT_ITEMS};
 $config->{'appKey'}=$ENV{GIS_OPT_APPKEY}||`g.gisenv ET_APPKEY`;
+$config->{verbose}=$ENV{GIS_FLAG_V};
 chomp($config->{'appKey'});
 
 my $stations = stations($config);
 
-$config->{stationIds}=$ENV{GIS_OPT_STATIONIDS} ||
+$config->{stations}=$ENV{GIS_OPT_STATIONS} ||
     join(',',sort {$a <=> $b} keys %$stations);
 
 if ($ENV{GIS_FLAG_S}) {
@@ -219,10 +227,10 @@ if ($ENV{GIS_FLAG_S}) {
     foreach (split(',',$config->{items})) {
 	my $c=$_;
 	$c=~s/-/_/g;
-	push @cols,"$c double precision","${c}_qc varchar(1)"; 
+	push @cols,"$c double precision","${c}_qc varchar(1)";
     }
     my $items = data($config);
-    my $cmd=sprintf("v.in.ascii %s out=%s cat=1 x=2 y=3 z=4 columns='%s'",
+    my $cmd=sprintf("v.in.ascii %s input=- output=%s cat=1 x=2 y=3 z=4 columns='%s'",
 		    $ENV{GIS_FLAG_OVERWRITE}?'--overwrite':'',
 		    $config->{output},join(',',@cols));
     system "g.message -d message=\"$cmd\"";

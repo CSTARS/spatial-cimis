@@ -5,7 +5,7 @@ use Pod::Usage;
 
 # Taken from heliosat code.
 #  /* Coefficients for the beam angular function, Fb */
-our @AP=( [ 2.6463e-01,-6.1581e-02, 3.1408e-03], 
+our @AP=( [ 2.6463e-01,-6.1581e-02, 3.1408e-03],
 	  [ 2.0402    , 1.8945e-02,-1.1161e-02],
 	  [-1.3025    , 3.9231e-02, 8.5079e-03]);
 
@@ -16,7 +16,7 @@ our @LE=
     [-1.7349e-2, -5.8985e-3,  6.8868e-4],
     [ 1.0258   , -1.2196e-1,  1.9229e-3],
     [-7.2178e-3,  1.3086e-1, -2.8405e-3,0],
-    
+
    ],
    # 15>y>30
    [
@@ -46,7 +46,7 @@ our %Rname;
 our $pi=atan2(0,-1);
 
 
-our @R_mapcalc_common = 
+our @R_mapcalc_common =
   (
    elevin=> sub {pod2usage(msg=>"Specify elevin [meters]",exitval=>1);},
    linkein=> sub {pod2usage(msg=>"Specify linke Turbidity (2AM)",exitval=>1);},
@@ -74,7 +74,7 @@ our @R_mapcalc_B =
    Bc=>"2*#Fbiss#*#Bcz#*(12/$pi)",
   );
 
-our @R_mapcalc_Bi = 
+our @R_mapcalc_Bi =
     (
      hrang=>sub {print "Should be calculated already";},
    ha=>"min(#ssha#,max(-#ssha#,#hrang#))",
@@ -133,10 +133,15 @@ foreach (keys %Rname) {
 # These functions are nice and should be moved to GRASS.pm
 
 sub g_cmd {
-  my ($cmd,%p)=@_;
-  my @cmd = map("$_=$p{$_}",keys %p);
-  print STDERR join(" ",$cmd,@cmd)."\n";
-  system $cmd,@cmd;
+    my ($cmd,%p)=@_;
+    my $flags = $p{flags} || [];
+    delete $p{flags};
+    my @cmd = map("$_=$p{$_}",keys %p);
+    unshift @cmd,@$flags;
+#  print STDERR join(" ",$cmd,@cmd)."\n";
+#  system($cmd,@cmd) == 0
+    #      or warn "$0: $cmd exited " . ($? >> 8) . "\n";
+    system($cmd,@cmd);
 }
 
 sub g_cmdq {
@@ -157,8 +162,9 @@ sub g_findfile {
 }
 
 sub r_mapcalc {
-  my (%p)=@_;
-  g_cmd('r.mapcalc',%p);
+    my (%p)=@_;
+    $p{flags}=['--quiet'];
+    g_cmd('r.mapcalc',%p);
 }
 
 # Flag Options
@@ -168,10 +174,10 @@ our $beam=1;
 our $diffuse=1;
 our $sum=1;
 our $prefix='_hel_';
-our $year=-1; 
-our $month=-1; 
-our $day=-1; 
-our $hour=-1; 
+our $year=-1;
+our $month=-1;
+our $day=-1;
+our $hour=-1;
 our $minute=-1;
 our $timezone=0;
 
@@ -215,7 +221,7 @@ push @R_mapcalc,@R_mapcalc_Gi if $sum and $instant;
     $Rname{month}=$month;
     $Rname{day}=$day;
 }
-	   
+
 # Get Default Names
 for(my $i=0; $i<=$#R_mapcalc; $i+=2) {
     my $n=$R_mapcalc[$i];
@@ -227,14 +233,15 @@ for(my $i=0; $i<=$#R_mapcalc; $i+=2) {
 }
 
 if($clean) {
-  system sprintf "g.remove rast=%s",join(',',values %Rname);
+  g_cmd("g.remove",'rast',join(',',values %Rname));
 }
 
 if ($instant) {
   my %p;
-  $p{year}=$year; $p{month}=$month; $p{day}=$day; 
+  $p{year}=$year; $p{month}=$month; $p{day}=$day;
   $p{hour}=$hour;$p{minute}=$minute;$p{timezone}=$timezone;
   $p{hrang}=$Rname{hrang} if $instant;
+  $p{flags}=['--quiet','--overwrite'];
   g_cmd('r.solpos',%p);
 }
 
@@ -246,8 +253,8 @@ while (my $name= shift @R_mapcalc) {
       } else {
 	  # Re-write equation
 	  grep ($val=~ s/\#$_\#/$Rname{$_}/g,keys %Rname);
-	  print "r_mapcalc $Rname{$name}=>$val";
-	  r_mapcalc $Rname{$name}=>$val;
+	  #print "r_mapcalc $Rname{$name}=>$val";
+	  r_mapcalc expression=>"$Rname{$name}=$val";
       }
   }
 }
