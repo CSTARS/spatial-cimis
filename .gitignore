@@ -2,6 +2,7 @@
 \#*\#
 
 # Grass datasets and files
+.gislock
 .tmp/
 .bashrc
 .bash_history
