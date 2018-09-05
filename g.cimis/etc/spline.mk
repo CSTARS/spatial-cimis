@@ -4,6 +4,7 @@ ifndef configure.mk
 include configure.mk
 endif
 
+V.info:=@
 spline.mk:=1
 
 # Lapse Rates/Tensions/Smooth for dewp and min_at
@@ -39,14 +40,13 @@ define spline_template
 clean::
 	g.remove $(1)_t$(2)_z$(3)_s$(4)
 
-#...maskmap=${state}
 $(rast)/$(1)_t$(2)_z$(3)_s$(4): ${vect}/et
-	g.region -d b=-100 t=2500 tbres=1000; \
-	v.vol.rst --overwrite segmax=600 input=et wcolumn=${1} cellinp=${Z} \
+	${V.info}g.region -d; \
+	v.vol.rst --quiet --overwrite segmax=700 npmin=100 \
+	  input=et wcolumn=${1} cross_input=${Z} \
 	  maskmap=${state} where="${1}_qc in ('K','Y','H','')" \
 	  tension=$(2) zscale=$(3) smooth=$(4) \
-	  cellout=$(1)_t$(2)_z$(3)_s$(4) > /dev/null &>/dev/null; \
-	g.region -d
+	  cross_output=$(1)_t$(2)_z$(3)_s$(4) 2> /dev/null
 endef
 
 $(foreach p,day_rel_hum_max day_wind_spd_avg,$(eval $(call spline_template,$(p),$(tension),$(zmult),$(smooth))))

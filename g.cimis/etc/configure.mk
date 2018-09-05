@@ -101,7 +101,7 @@ endef
 # MASK defines
 ##############################################################################
 define MASK
-	(g.findfile element=cellhd file=MASK > /dev/null || g.copy --quiet raster=state@2km,MASK);
+	(g.findfile element=cellhd file=MASK > /dev/null || g.copy --quiet raster=state@500m,MASK);
 endef
 
 define NOMASK

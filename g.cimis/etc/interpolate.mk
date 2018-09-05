@@ -10,6 +10,8 @@ endif
 
 interpolate.mk:=1
 
+V.info=@
+
 .PHONY: info
 info::
 	@echo interpolate.mk
@@ -35,13 +37,13 @@ clean::
 	g.remove rast=U2
 
 $(rast)/U2: ${rast}/day_wind_spd_avg_${tzs}
-	$(call MASK)
+	${V.info}$(call MASK)\
 	$(call calc,U2,$(notdir $<));\
 	r.support map=U2 title='U2' units='m/s' \
 	description='Daily average windspeed at 2m height' \
-	source1='3D spline from CIMIS data'
-	map=$(notdir $@);
-	$(call colorize,$(notdir $@))
+	source1='3D spline from CIMIS data';\
+	map=$(notdir $@);\
+	$(call colorize,$(notdir $@));\
 	$(call NOMASK)
 
 # Currently all Temperature estimations (Tn,Tx,Tdew)

@@ -115,7 +115,7 @@ ${rast}/${cloud}: ${rast}/${p} ${etc}/max/$1
 	eval $$$$(cat ${etc}/max/$1);\
 	${calc} expression="'${cloud}'=if(($$$$max-'${1}')/($$$$max-'${p}')>0.2,\
 	  min(($$$$max-'${1}')/($$$$max-'${p}'),1.09),\
-	  (1.667)*(($$$$max-'${1}')/($$$$max-'${p}'))^2+(0.333)*(($$$$max-'${1}')/($$$$max-'${p}'))+0.0667)"
+	  min(0.2,(1.667)*(($$$$max-'${1}')/($$$$max-'${p}'))^2+(0.333)*(($$$$max-'${1}')/($$$$max-'${p}'))+0.0667))"
 
 endef
 
@@ -169,7 +169,7 @@ $(eval prev_cloud:=$(call fn_cloud,$2))
 $(eval prev_cloud_sky:=$(call fn_cloud_sky,$2))
 $(eval prev_clear_sky:=$(call fn_clear_sky,$2))
 
-solar:: ${rast}/ssetr-G ${rast}/ssetr-Gc
+solar:: ${rast}/ssetr-G ${rast}/ssetr-Gc ${rast}/ssetr-K
 
 clean-i-tmp::
 	g.remove -f type=rast pattern=_hel_*$(shell ./g.cimist ssetr)
@@ -186,6 +186,9 @@ ${rast}/ssetr-G: ${rast}/${cloud} ${rast}/${cloud_sky} ${rast}/ssetr-Gi
 
 ${rast}/ssetr-Gc: ${rast}/ssetr-Gi ${rast}/sretr-Gi
 	${calc} expression="'ssetr-Gc'='ssetr-Gi'-'sretr-Gi'"
+
+${rast}/ssetr-K: ${rast}/ssetr-Gi ${rast}/ssetr-G
+	${calc} expression="'ssetr-K'='ssetr-G'/'ssetr-Gc'"
 
 endef
 
