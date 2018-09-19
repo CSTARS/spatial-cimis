@@ -30,7 +30,7 @@ radiation from the sum of its beam, diffuse and reflected components.
 # EXAMPLES
 
 # SEE ALSO
-[r.sun] (https://grass.osgeo.org/grass77/manuals/r.sun.html)
+[r.sun](https://grass.osgeo.org/grass77/manuals/r.sun.html)
 
 # REFERENCES
 Kasten, F. (1996). The Linke turbidity factor based on improved values of the integral Rayleigh optical thickness. Solar Energy, 56 (3), 239-244.
@@ -40,4 +40,3 @@ Rigollier, Ch., Bauer, O., Wald, L. (2000). On the clear sky model of the ESRA -
 Quinn Hart, University of California, Davis
 © 2004 Quinn Hart. This program is free software under the GNU General Public License (>=v2)
 qjhart@ucdavis.edu
-Last changed: $Date: 2018-01-23 16:36:24 +0100 (Tue, 23 Jan 2018) $
