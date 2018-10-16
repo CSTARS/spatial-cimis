@@ -76,8 +76,10 @@ $(1).asc.gz: $(html)/$(1).asc.gz
 $(html)/$(1).asc.gz: $(rast)/$(1)
 	@echo $(1).asc.gz
 	@[[ -d $(html) ]] || mkdir -p $(html)
-	@r.out.arc input=$(1) output=$(html)/$(1).asc &>/dev/null;
+	@r.out.gdal input=$(1) format=AAIGrid nodata=-9999 output=$(html)/$(1).asc &>/dev/null;
 	@gzip -f $(html)/$(1).asc;
+	@rm $(html)/$(1).asc.aux.xml
+	@rm $(html)/$(1).prj
 
 $(html)/$(1).png: $(rast)/$(1)
 	@echo $(1).png
