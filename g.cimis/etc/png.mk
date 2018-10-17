@@ -63,9 +63,10 @@ ${html}/station.csv:${etc}/station.csv
 	cp $< $@
 
 ${etc}/station.csv: ${vect}/et
+	[[ -d ${etc} ]] || mkdir -p ${etc}
 	cols=`v.info -c et 2>/dev/null | grep day | cut -d'|' -f 2 | tr "\n" ',' | sed -e 's/.$$//'`;\
 	echo "x,y,z,station_id,date,$${cols}" > $@ ;\
-	v.out.ascii input=et fs=',' dp=2 columns=date,$${cols} >>$@
+	v.out.ascii input=et separator=',' precision=2 columns=date,$${cols} >>$@
 
 define png
 .PHONY: $(1).png
