@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+# Pulls daily UCD GOES16 cimis grass mapsets to the DWR processor
+# uses the existing GOES15 receiver as an ssh proxy to UCD
+# should be run as the cimis user on the DWR processor
+
+function get ()
+{
+	rsync -az -e "ssh -i /home/cimis/.ssh/ucdgoes -A cimis@10.28.200.5 ssh -i /home/cimis/.ssh/dwr-receiver" cimis@cimis-goes-r.cstars.ucdavis.edu:/home/quinn/gdb/cimis/$(date +%Y%m%d --date="yesterday") ~/gdb/cimis
+}
+function move ()
+{
+        mv ~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ~/gdb/cimis/$(date --iso --date="yesterday")
+}
+
+
+if [[ -d ~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ]];then
+        echo "~/gdb/cimis/$(date +%Y%m%d --date="yesterday") already exists, not moving..."
+else
+        get
+fi
+if [[ -d ~/gdb/cimis/$(date --iso --date="yesterday") ]];then
+        echo "~/gdb/cimis/$(date --iso --date="yesterday") already exists, not transferring..."
+else
+        move
+fi

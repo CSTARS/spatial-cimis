@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function get ()
+{
+        rsync -az -e "ssh -i /home/cimis/.ssh/rsync" quinn@cimis-goes-r.cstars.ucdavis.edu:~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ~/gdb/cimis
+}
+function move ()
+{
+        mv ~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ~/gdb/cimis/$(date --iso --date="yesterday")
+}
+
+
+if [[ -d ~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ]];then
+        echo "~/gdb/cimis/$(date +%Y%m%d --date="yesterday") already exists, not moving..."
+else
+        get
+fi
+if [[ -d ~/gdb/cimis/$(date --iso --date="yesterday") ]];then
+        echo "~/gdb/cimis/$(date --iso --date="yesterday") already exists, not transferring..."
+else
+        move
+fi
