@@ -71,5 +71,5 @@ Pulls daily GOES16 grass maps to `/home/cimis/gdb/cimis`
 
 The `cg.daily.output` grass script runs a modified version of the raster output grass makefile `png-special` which creates the daily raster images and zipcodes.
 
-Scripts available in this [repo] (https://github.com/CSTARS/spatial-cimis/tree/GOES-16-17/bin).
+Scripts available in this [repo](https://github.com/CSTARS/spatial-cimis/tree/GOES-16-17/bin).
 
