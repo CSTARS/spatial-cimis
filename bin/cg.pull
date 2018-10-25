@@ -1,22 +1,30 @@
 #!/bin/bash
 
+GDB=~/gdb/cimis
+#GDB=~/UCD	# a test directory
+
 function get ()
 {
-        rsync -az -e "ssh -i /home/cimis/.ssh/rsync" quinn@cimis-goes-r.cstars.ucdavis.edu:~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ~/gdb/cimis
+	rsync -az -e "ssh -i /home/cimis/.ssh/rsync" quinn@cimis-goes-r.cstars.ucdavis.edu:/home/quinn/gdb/cimis/$(date +%Y%m%d --date="yesterday") $GDB
 }
 function move ()
 {
-        mv ~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ~/gdb/cimis/$(date --iso --date="yesterday")
+	mv $GDB/$(date +%Y%m%d --date="yesterday") $GDB/$(date --iso --date="yesterday")
+}
+function archive ()
+{
+	mv $GDB/$(date --iso --date="yesterday") $GDB/$(date --iso --date="yesterday")-GOES15-$$
 }
 
 
-if [[ -d ~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ]];then
-        echo "~/gdb/cimis/$(date +%Y%m%d --date="yesterday") already exists, not moving..."
+if [[ -d $GDB/$(date +%Y%m%d --date="yesterday") ]];then
+	echo "$GDB/$(date +%Y%m%d --date="yesterday") already exists, not pulling..."
 else
-        get
+	get
 fi
-if [[ -d ~/gdb/cimis/$(date --iso --date="yesterday") ]];then
-        echo "~/gdb/cimis/$(date --iso --date="yesterday") already exists, not transferring..."
+if [[ -d $GDB/$(date --iso --date="yesterday") ]];then
+	archive
+	move
 else
         move
 fi

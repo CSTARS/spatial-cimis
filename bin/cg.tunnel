@@ -4,23 +4,32 @@
 # uses the existing GOES15 receiver as an ssh proxy to UCD
 # should be run as the cimis user on the DWR processor
 
+GDB=~/gdb/cimis
+#GDB=~/UCD 	# a test directory
+
 function get ()
 {
-	rsync -az -e "ssh -i /home/cimis/.ssh/ucdgoes -A cimis@10.28.200.5 ssh -i /home/cimis/.ssh/dwr-receiver" cimis@cimis-goes-r.cstars.ucdavis.edu:/home/quinn/gdb/cimis/$(date +%Y%m%d --date="yesterday") ~/gdb/cimis
+	rsync -az -e "ssh -i /home/cimis/.ssh/ucdgoes -A cimis@10.28.200.5 ssh -i /home/cimis/.ssh/dwr-receiver" cimis@cimis-goes-r.cstars.ucdavis.edu:/home/quinn/gdb/cimis/$(date +%Y%m%d --date="yesterday") $GDB
 }
 function move ()
 {
-        mv ~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ~/gdb/cimis/$(date --iso --date="yesterday")
+	mv $GDB/$(date +%Y%m%d --date="yesterday") $GDB/$(date --iso --date="yesterday")
+}
+function archive ()
+{
+	mv $GDB/$(date --iso --date="yesterday") $GDB/$(date --iso --date="yesterday")-GOES15-$$
 }
 
 
-if [[ -d ~/gdb/cimis/$(date +%Y%m%d --date="yesterday") ]];then
-        echo "~/gdb/cimis/$(date +%Y%m%d --date="yesterday") already exists, not moving..."
+if [[ -d $GDB/$(date +%Y%m%d --date="yesterday") ]];then
+	# the GOES16 mapset already exists, don't pull from UCD
+	echo "$GDB/$(date +%Y%m%d --date="yesterday") already exists, not pulling"
 else
-        get
+	get
 fi
-if [[ -d ~/gdb/cimis/$(date --iso --date="yesterday") ]];then
-        echo "~/gdb/cimis/$(date --iso --date="yesterday") already exists, not transferring..."
+if [[ -d $GDB/$(date --iso --date="yesterday") ]];then
+	archive
+	move
 else
-        move
+	move
 fi
