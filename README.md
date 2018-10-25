@@ -54,4 +54,12 @@ sudo apt install libgeos-3.5.0 libgeos-dev grass grass-dev gcc
 
 ## Incron Setup
 
-# Feed Production Processors
+# GOES16 ETo Rasters and webAPI
+As of October 23rd 2018 the production DWR and UCD Spatial CIMIS processors no longer processes GOES15 data from their respective on site dishes and receivers.  Instead they pull daily GOES16 CIMIS data products from the UCD GOES16 processor and use existing processes to continue to provide raster outputs, Arc/Info ASCII Grid output as well as ETo data for the webAPI.
+
+Each GOES15 processor run scripts as the `cimis` user to accomplish this.
+3:15am `/home/cimis/bin/cg.tunnel` 
+Pulls daily GOES16 grass maps to `/home/cimis/gdb/cimis`
+
+3:30am `/home/cimis/bin/cg.grass.script /home/cimis/bin/cg.daily.output`
+The `cg.daily.output` grass script runs a modified version of the raster output grass makefile `png-special` which creates the daily raster images and zipcodes.
