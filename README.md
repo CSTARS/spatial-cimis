@@ -70,29 +70,36 @@ Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command:
 
 # GOESBOX Configuration (an Open Suse Leap 42.3 or newer server)
 
-## Incron Setup
+## Incron
 
-Incron setup for grb-box.cstars.ucdavis.edu 
+Incron setup for grb-box.cstars.ucdavis.edu or DWR receiver
 
-Download RPM package for OpenSuse Leap 42.3 and install 
-https://software.opensuse.org/package/incron?search_term=incron 
+[Download RPM package](https://software.opensuse.org/package/incron?search_term=incron) for OpenSuse Leap 42.3 and install
+
 `rpm -i /root/incron-0.5.10-2.1.x86_64.rpm`
+
 Register startup script:  `insserv incron` 
+
 More details at http://inotify.aiken.cz/?section=incron&page=download&lang=en
 
 Create the cimis user and CA subset directory 
-```useradd –m –c “Spatial CIMIS” cimis
+```
+useradd –m –c “Spatial CIMIS” cimis
 mkdir /grb/raw/CA ; chown cimis /grb/raw/CA
-cd ; ln -sf /grb/raw/CA```
+cd ; ln -sf /grb/raw/CA
+```
 Subset data should reside on the largest storage array 
 
 Clone repo 
 
-```cd 
-git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis```
+```
+cd 
+git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis
+```
 
 Pre-setup incron 
-```echo cimis >> /etc/incron.allow 
+```
+echo cimis >> /etc/incron.allow 
 $grb-box=$(find cd /home/cimis/spatial-cimis/grb-box |grep –v README) 
 sudo cp -v $grb-box /usr/local/binj/grb-box 
 sudo chmod 644 *.mk 
@@ -113,9 +120,9 @@ push.mk
 
 On the grb-box create a passwordless ssh key pair for the rsync exchange and add public key to cimis@goes-cimis-r.cstars.ucdavis.edu/.ssh/authorized_keys.  Pre-pend string from="IP of GRB Box receiver" to limit access only from the GRB-BOX. 
 
-`ssh-keygen -t rsa -b 4096 -C "cimis@grb-box.cstars.ucdavis.edu"`
+```ssh-keygen -t rsa -b 4096 -C "cimis@grb-box.cstars.ucdavis.edu"
 
-```incrontab –e 
+incrontab –e 
 /grb/raw/fulldisk IN_CREATE /usr/local/grb-box/goesctl raw=$@/$# CA 
 /home/cimis/CA IN_CREATE /usr/local/grb-box/goesctl ca=$@/$# push 
 ```
