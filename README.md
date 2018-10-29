@@ -118,9 +118,10 @@ push.mk
   rsync -avz -e "ssh -i ~/.ssh/rsync" ${ca} cimis@cimis-goes-r.cstars.ucdavis.edu:CA 
 ```
 
-On the grb-box create a passwordless ssh key pair for the rsync exchange and add public key to cimis@goes-cimis-r.cstars.ucdavis.edu/.ssh/authorized_keys.  Pre-pend string from="IP of GRB Box receiver" to limit access only from the GRB-BOX. 
+On the grb-box create a passwordless ssh key pair for the rsync exchange and add public key to `cimis@GOESBOX/.ssh/authorized_keys`.  Pre-pend string `from="IP of GRB Box receiver"` to limit access only from the GRB-BOX. 
 
-```ssh-keygen -t rsa -b 4096 -C "cimis@grb-box.cstars.ucdavis.edu"
+```
+ssh-keygen -t rsa -b 4096 -C "cimis@grb-box.cstars.ucdavis.edu"
 
 incrontab –e 
 /grb/raw/fulldisk IN_CREATE /usr/local/grb-box/goesctl raw=$@/$# CA 
