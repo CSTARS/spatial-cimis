@@ -68,9 +68,11 @@ Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command:
 
 ### Grass database, ~/gdb
 
-# GOESBOX Configuration (an Open Suse Leap 42.3 or newer server)
+# GOESBOX 
 
-## Incron
+## Software Configuration (an Open Suse Leap 42.3 or newer server)
+
+### Incron
 
 Incron setup for grb-box.cstars.ucdavis.edu or DWR receiver
 
