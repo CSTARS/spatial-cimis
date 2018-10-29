@@ -46,13 +46,87 @@ sudo apt install libgeos-3.5.0 libgeos-dev grass grass-dev gcc
 
 ## Install Spatial CIMIS
 
+`sudo su - cimis`
+`git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis`
+`ln –sf spatial-cimis/gdb`
+`grass -text ~/gdb/cimis/PERMANENT`
+
+The cimis user will need the ET APP key.   `~cimis/.grass7/rc` should contain:
+
+```
+MAPSET: 500m 
+ET_APPKEY: {your app key} 
+GISDBASE: /home/cimis/gdb 
+LOCATION_NAME: cimis 
+GUI: text 
+```
+Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command:
+`GRASS 7.4.0 (cimis):~ > v.in.et -?`
+`GRASS 7.4.0 (cimis):~ > g.gisenv`
+
 ### GrassModules
 
 ### Grass database, ~/gdb
 
-# GOESBOX Configuration
+# GOESBOX Configuration (an Open Suse Leap 42.3 or newer server)
 
 ## Incron Setup
+
+Incron setup for grb-box.cstars.ucdavis.edu 
+
+Download RPM package for OpenSuse Leap 42.3 and install 
+https://software.opensuse.org/package/incron?search_term=incron 
+`rpm -i /root/incron-0.5.10-2.1.x86_64.rpm`
+Register startup script:  `insserv incron` 
+More details at http://inotify.aiken.cz/?section=incron&page=download&lang=en
+
+Create the cimis user and CA subset directory 
+```useradd –m –c “Spatial CIMIS” cimis
+mkdir /grb/raw/CA ; chown cimis /grb/raw/CA
+cd ; ln -sf /grb/raw/CA```
+Subset data should reside on the largest storage array 
+
+Clone repo 
+
+```cd 
+git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis```
+
+Pre-setup incron 
+```echo cimis >> /etc/incron.allow 
+$grb-box=$(find cd /home/cimis/spatial-cimis/grb-box |grep –v README) 
+sudo cp -v $grb-box /usr/local/binj/grb-box 
+sudo chmod 644 *.mk 
+sudo chmod 754 goestcl 
+chgrp cimis goesctl *.mk 
+
+goes-ctl 
+  make --silent --directory=/usr/local/grb-box -f goesctl.mk "$@" 
+
+convert.mk 
+  base:=/home/cimis 
+
+push.mk 
+  ca:=$(wildcard /home/cimis/CA/*) 
+  … 
+  rsync -avz -e "ssh -i ~/.ssh/rsync" ${ca} cimis@cimis-goes-r.cstars.ucdavis.edu:CA 
+```
+
+On the grb-box create a passwordless ssh key pair for the rsync exchange and add public key to cimis@goes-cimis-r.cstars.ucdavis.edu/.ssh/authorized_keys.  Pre-pend string from="IP of GRB Box receiver" to limit access only from the GRB-BOX. 
+
+`ssh-keygen -t rsa -b 4096 -C "cimis@grb-box.cstars.ucdavis.edu"`
+
+```incrontab –e 
+/grb/raw/fulldisk IN_CREATE /usr/local/grb-box/goesctl raw=$@/$# CA 
+/home/cimis/CA IN_CREATE /usr/local/grb-box/goesctl ca=$@/$# push 
+```
+
+Initially connect with the rsync ssh connection with the key pairs to accept the connection.  The incrontab session should now be pushing CA cropped band 2 images to the cimis server. 
+
+Keep the last 6 months of CA subsetted data on the grb-box 
+
+```crontab -e 
+4 4 * * * find /home/cimis/CA/ -mtime +180  -name \*.pgm | xargs rm 
+```
 
 # Final Configuration
 
