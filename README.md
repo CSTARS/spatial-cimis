@@ -11,38 +11,14 @@ These instructions are for setting up the spatial CIMIS program for either
 Ubuntu (UCD) or Red Hat / Fedora (DWR) based servers.
 
 Spatial CIMIS is run primarily with the GRASS GIS program.  However,
-there are some additional steps that need to take place. These vary
-between development and test machines
+there are some additional steps that need to take place. 
 
-## Software installation
-
-The development machine needs to include packages that allow both the
-operation of the software, but also the compilation of the Spatial
-GOES code.  Therefore additional development packages need to be
-installed on these systems.  Use the following commands to install the
-required packages.
-
-### Red Hat / Fedora
-``` bash
-sudo dnf update
-sudo dnf install sqlite rsync wget curl perl cronie daemonize \
-    perl-JSON perl-Date-Manip perl-TimeDate perl-Test-Pod \
-    perl-SOAP-Lite perl-XML-Simple
-sudo dnf install geos geos-devel grass grass-devel gcc
-```
-
-### Ubuntu
-``` bash
-sudo apt update;sudo apt upgrade
-sudo apt install sqlite rsync wget curl perl cron daemon \
-    libjson-pp-perl libdate-manip-perl libdatetime-perl libtest-pod-perl \
-    libsoap-lite-perl libxml-simple-perl
-sudo apt install libgeos-3.5.0 libgeos-dev grass grass-dev gcc
-```
-
-## Install and Configure Incron
 
 ## Install GRASS7
+
+### GrassModules
+
+### Grass database, ~/gdb
 
 ## Install Spatial CIMIS
 
@@ -64,9 +40,7 @@ Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command:
 `GRASS 7.4.0 (cimis):~ > v.in.et -?`
 `GRASS 7.4.0 (cimis):~ > g.gisenv`
 
-### GrassModules
-
-### Grass database, ~/gdb
+## Install and Configure Incron
 
 # GOESBOX 
 
@@ -74,11 +48,14 @@ Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command:
 
 ### Incron
 
-Incron setup for grb-box.cstars.ucdavis.edu or DWR receiver.  [Download RPM package](https://software.opensuse.org/package/incron?search_term=incron) for OpenSuse Leap 42.3 and install.
+Incron setup for grb-box.cstars.ucdavis.edu or DWR receiver.  
+[Download RPM package](https://software.opensuse.org/package/incron?search_term=incron) 
+for OpenSuse Leap 42.3 and install.
 
 `rpm -i /root/incron-0.5.10-2.1.x86_64.rpm`
 
-Register startup script:  `insserv incron`.  More details at http://inotify.aiken.cz/?section=incron&page=download&lang=en
+Register startup script:  `insserv incron`.  
+More details at http://inotify.aiken.cz/?section=incron&page=download&lang=en
 
 Create the cimis user and CA subset directory 
 ```
