@@ -5,7 +5,7 @@ data.  This will require new infrastructure (new dish and servers) and a slightl
 modified spatial CIMIS toolset to process the new spatial data.
 
 
-# Development Machines
+# Development CIMIS Process
 
 These instructions are for setting up the spatial CIMIS program for either
 Ubuntu (UCD) or Red Hat / Fedora (DWR) based servers.
@@ -22,10 +22,12 @@ there are some additional steps that need to take place.
 
 ## Install Spatial CIMIS
 
-`sudo su - cimis`
-`git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis`
-`ln –sf spatial-cimis/gdb`
-`grass -text ~/gdb/cimis/PERMANENT`
+```
+sudo su - cimis
+git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis
+ln –sf spatial-cimis/gdb
+grass -text ~/gdb/cimis/PERMANENT
+```
 
 The cimis user will need the ET APP key.   `~cimis/.grass7/rc` should contain:
 
@@ -37,10 +39,30 @@ LOCATION_NAME: cimis
 GUI: text 
 ```
 Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command:
-`GRASS 7.4.0 (cimis):~ > v.in.et -?`
-`GRASS 7.4.0 (cimis):~ > g.gisenv`
+```
+GRASS 7.4.0 (cimis):~ > v.in.et -?
+GRASS 7.4.0 (cimis):~ > g.gisenv
+```
 
-## Install and Configure Incron
+### Install and Configure Incron
+
+With incron installed ensure the cimis user can add to its incrontab file:
+`echo cimis >> /etc/incron.allow`
+
+### Setup GOES.mk
+
+The following incron job copies cloud cover into grass db (goes16). 
+sudo su – cimis 
+vi ~/spatial-cimis/g.cimis/etc/goes.mk 
+files:=$(wildcard /home/cimis/CA/*.pgm) 
+sudo echo cimis >> /etc/incron.allow 
+incrontab –e  
+/home/cimis/CA IN_MOVED_TO \ 
+  grass /home/cimis/gdb/goes16/cimis \ 
+  --exec /home/cimis/spatial-cimis/g.cimis/etc/goes.mk \ 
+  --directory=/home/cimis/spatial-cimis/g.cimis/etc files=$@/$# import solar 
+
+### Solar Calculation
 
 # GOESBOX 
 
