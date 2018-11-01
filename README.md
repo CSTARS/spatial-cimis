@@ -65,7 +65,7 @@ Make sure this line looks like this:
 ```
 files:=$(wildcard /home/cimis/CA/*.pgm) 
 ```
-Add the following incronab entry which will pull the raw data from the receiver.
+Add the following incronab entry which will import into GRASS the recently acquired raw data from the receiver.
 ```
 incrontab –e  
 ```
