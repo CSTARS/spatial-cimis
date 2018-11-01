@@ -7,21 +7,17 @@ modified spatial CIMIS toolset to process the new spatial data.
 
 # Development CIMIS Processor
 
-These instructions are for setting up the spatial CIMIS program for either
-Ubuntu (UCD) or Red Hat / Fedora (DWR) based servers.
+These instructions are for setting up the spatial CIMIS program on the
+GOES processing server.
 
-Spatial CIMIS is run primarily with the GRASS GIS program.  However,
-there are some additional steps that need to take place. 
-
+Spatial CIMIS is run primarily with the GRASS GIS program.  Additional steps 
+are required to acquire the raw GOES data.
 
 ## Install GRASS7
 
-### GrassModules
-
-### Grass database, ~/gdb
-
 ## Install Spatial CIMIS
 
+Download the Spatial CIMIS GRASS initial database and processing scripts.
 ```
 sudo su - cimis
 git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis
@@ -74,6 +70,21 @@ incrontab –e
   grass /home/cimis/gdb/goes16/cimis \ 
   --exec /home/cimis/spatial-cimis/g.cimis/etc/goes.mk \ 
   --directory=/home/cimis/spatial-cimis/g.cimis/etc files=$@/$# import solar 
+```
+
+### Install GRASS modules
+
+Download and compile r.solpos and r.heliosat.  g.extension adds it to the local addons in ~/.grass7/addons. 
+```
+sudu su – cimis ; cd src 
+git clone https://github.com/CSTARS/r.solpos 
+cd gdb
+grass cimis/cimis 
+cd ~src/r.solpos 
+g.extension r.solpos url=/home/cimis/src/r.solpos 
+r.solpos --help 
+g.extension r.heliosat url=/home/cimis/spatial-cimis/r.heliosat 
+r.heliosat 
 ```
 
 ### Solar Calculation
