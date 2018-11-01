@@ -92,47 +92,89 @@ r.heliosat
 ### Solar Calculation
 
 The clear sky solar calculation uses the cloud cover data from the GOES16/17 
-Grass DB to calculate the actual solar net radiation.  Currently runs at 
-the end of the day (not real time as of yet) and takes about **25 minutes for each day**. 
+Grass DB to calculate the actual solar net radiation.  Data is collected every 15 minutes with a daily
+solar calculation at the end of the day.  Each day's solar calculation takes about **25 minutes**. 
 
+This is an example of how to calculate the solar radiation for a day's worth of data.
 ```
 grass solar/cimis 
 ```
-always start in the cimis mapset to retain bash history
-```cd solar 
-g.mapset 20180810 
-g.list rast  
+Always start in the cimis mapset to retain bash history.  In this example we are looking at the day of
+August 1 2018.  It is assumed that the raw data has already been pushed to this processor and imported
+into GRASS.
 ```
-Lists solar calculations; raster results with –G are finished.  The ssetr –G is used by the cimis program 
+cd solar 
+g.mapset 20180801
+make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar;
 ```
-make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar {-n} 
+The make command will process the day's raw data and produce the necessary net radiation maps.  Once the calculation
+has finished you can run the `g.list rast` command to verify you see the following rasters with the `-G` extension were
+created.
 ```
-The `-n` option does a check, doesn't actually execute.
+g.list.rast type=rast pattern=ssetr*
 ```
-g.mapset 20180811 
-g.list type=rast pattern=ssetr* 
 ```
-Lists ssetr –G –Gc –Gi –K rasters 
+ssetr
+ssetr-G
+ssetr-Gc
+ssetr-Gi
+ssetr-K
+```
 
-Check to see which dates have incomplete solar calculations 
+You can search multiple days to determine if any past days need the solar calculation.  For example if the month
+of October raw data has been imported use this command to check each day has incomplete solar calculations.
 ```
 for m in  201808??;do x=`g.list type=rast pattern=ssetr-G mapset=$m`;echo $m  $x;done 
 ```
-This determined that 20180812 was the last day with calculations.  Must start on the 13th. 
 ```
-g.mapset 20180813
+20181001 ssetr-G
+20181002
+20181003
+20181004 ssetr-G
+20181005 ssetr-G
+20181007
+20181008
+20181010 ssetr-G
+20181011 ssetr-G
+20181012 ssetr-G
+20181013 ssetr-G
+20181014 ssetr-G
+20181015 ssetr-G
+20181016 ssetr-G
+20181017 ssetr-G
+20181018 ssetr-G
+20181019 ssetr-G
+20181020 ssetr-G
+20181021 ssetr-G
+20181022 ssetr-G
+20181023 ssetr-G
+20181024 ssetr-G
+20181025 ssetr-G
+20181026 ssetr-G
+20181027 ssetr-G
+20181028 ssetr-G
+20181029 ssetr-G
+20181030 ssetr-G
+20181031 ssetr-G
 ```
-The make command looks at all cloud cover datasets then runs heliosat command.  
-Run at the end of the day. (no real time calculation currently). 
-```
-make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar 
-```
+
+This list shows that the 10/2, 10/3, 10/7 and 10/8 did not have solar calculations.  In this case this is a known
+GOES16 satellite outage due to solar activity so there is no data available for those days.
+
+But if you check a month and see no solar calculations you can (no `ssetr-g` rasters exist) you can process an entire
+months of raw data using the following loop.
 
 ```
 for m in 201810??;do echo $m;  
   g.mapset $m; 
   make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar;
 done 
+```
+
+Note that using the `-n` switch will act as a dry run and show you what needs to be done without actually
+executing the calculation.
+```
+make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar -n
 ```
 
 ### ETo Calculation
