@@ -110,6 +110,8 @@ Run at the end of the day. (no real time calculation currently).
 ```
 make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar 
 ```
+
+```
 for m in 201810??;do echo $m;  
   g.mapset $m; 
   **make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar; **
