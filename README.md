@@ -53,11 +53,19 @@ With incron installed ensure the cimis user can add to its incrontab file:
 ### Setup GOES.mk
 
 The following incron job copies cloud cover data into the Grass DB (GOES16 or GOES17). 
-```sudo su – cimis 
+
+Edit the goes.mk file and update the following line to ensure it points to the correct
+home directory.
+```
+sudo su – cimis 
 vi ~/spatial-cimis/g.cimis/etc/goes.mk 
+```
+
+Make sure this line looks like this:
+```
 files:=$(wildcard /home/cimis/CA/*.pgm) 
-sudo echo cimis >> /etc/incron.allow 
-incrontab –e  
+```
+```incrontab –e  
 /home/cimis/CA IN_MOVED_TO \ 
   grass /home/cimis/gdb/goes16/cimis \ 
   --exec /home/cimis/spatial-cimis/g.cimis/etc/goes.mk \ 
@@ -66,21 +74,21 @@ incrontab –e
 
 ### Solar Calculation
 
-The clear sky solar calculation uses the cloud cover data from the goes16 
-grass db to calculate the actual solar net radiation.  Currently runs at 
-the end of the day (not real time yet) and takes about 25 minutes for each day. 
+The clear sky solar calculation uses the cloud cover data from the GOES16/17 
+Grass DB to calculate the actual solar net radiation.  Currently runs at 
+the end of the day (not real time as of yet) and takes about **25 minutes for each day**. 
 
 ```
 grass solar/cimis 
 ```
-(always start in this mapset to retain the history) 
+always start in the cimis mapset to retain bash history
 ```cd solar 
 g.mapset 20180810 
 g.list rast  
 ```
 Lists solar calculations; raster results with –G are finished.  The ssetr –G is used by the cimis program 
 ```
-make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar{-n} 
+make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar {-n} 
 ```
 solar -n                   does a check 
 ```
