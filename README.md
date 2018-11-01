@@ -7,11 +7,11 @@ modified spatial CIMIS toolset to process the new spatial data.
 
 # Development CIMIS Processor
 
-These instructions are for setting up the spatial CIMIS program on the
-GOES processing server.
+Follow these instructions to setup the spatial CIMIS program on the GOES processing server.
 
 Spatial CIMIS is run primarily with the GRASS GIS program.  Additional steps 
-are required to acquire the raw GOES data.
+are required to acquire the raw GOES data and SHOULD BE RUN AS THE CIMIS USER.
+
 
 ## Install GRASS7
 
@@ -74,7 +74,9 @@ incrontab –e
 
 ### Install GRASS modules
 
-Download and compile r.solpos and r.heliosat.  g.extension adds it to the local addons in ~/.grass7/addons. 
+Download, compile r.solpos and r.heliosat using `g.extension`.  
+This process adds it to the local addons in ~/.grass7/addons. 
+
 ```
 sudu su – cimis ; cd src 
 git clone https://github.com/CSTARS/r.solpos 
