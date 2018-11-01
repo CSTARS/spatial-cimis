@@ -65,7 +65,11 @@ Make sure this line looks like this:
 ```
 files:=$(wildcard /home/cimis/CA/*.pgm) 
 ```
-```incrontab –e  
+Add the following incronab entry which will pull the raw data from the receiver.
+```
+incrontab –e  
+```
+```
 /home/cimis/CA IN_MOVED_TO \ 
   grass /home/cimis/gdb/goes16/cimis \ 
   --exec /home/cimis/spatial-cimis/g.cimis/etc/goes.mk \ 
@@ -127,6 +131,8 @@ cd cimis
 g.mapset 20180813 -c 
 make --directory=~/spatial-cimis/g.cimis/etc --file=cimis.mk ETo 
 ```
+
+### Automation
 
 # GOESBOX 
 
