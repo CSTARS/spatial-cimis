@@ -158,10 +158,10 @@ for m in  201808??;do x=`g.list type=rast pattern=ssetr-G mapset=$m`;echo $m  $x
 20181031 ssetr-G
 ```
 
-This list shows that the 10/2, 10/3, 10/7 and 10/8 did not have solar calculations.  In this case this is a known
+This list shows that days 10/2, 10/3, 10/7 and 10/8 did not have solar calculations.  In this case this is a known
 GOES16 satellite outage due to solar activity so there is no data available for those days.
 
-But if you check a month and see no solar calculations you can (no `ssetr-g` rasters exist) you can process an entire
+But if you check a month and see no solar calculations (no `ssetr-g` rasters exist) you can process an entire
 months of raw data using the following loop.
 
 ```
@@ -172,7 +172,7 @@ done
 ```
 
 Note that using the `-n` switch will act as a dry run and show you what needs to be done without actually
-executing the calculation.
+executing the calculation for that day.
 ```
 make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar -n
 ```
