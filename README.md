@@ -34,7 +34,8 @@ GISDBASE: /home/cimis/gdb
 LOCATION_NAME: cimis 
 GUI: text 
 ```
-Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command:
+Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command.  [Install GRASS modules
+for this work](https://github.com/CSTARS/spatial-cimis/tree/GOES-16-17#install-grass-modules)
 ```
 GRASS 7.4.0 (cimis):~ > v.in.et -?
 GRASS 7.4.0 (cimis):~ > g.gisenv
@@ -87,6 +88,8 @@ g.extension r.solpos url=/home/cimis/src/r.solpos
 r.solpos --help 
 g.extension r.heliosat url=/home/cimis/spatial-cimis/r.heliosat 
 r.heliosat 
+g.extension extension=v.in.et url=/home/cimis/spatial-cimis/v.in.et 
+v.in.et -? 
 ```
 
 ### Solar Calculation
