@@ -114,12 +114,19 @@ make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar
 ```
 for m in 201810??;do echo $m;  
   g.mapset $m; 
-  **make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar; **
+  make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar;
 done 
 ```
 
 ### ETo Calculation
-
+Once the solar calculation for the day is complete run the final ETo calculation.
+```
+sudo su - cimis
+grass cimis/cimis 
+cd cimis 
+g.mapset 20180813 -c 
+make --directory=~/spatial-cimis/g.cimis/etc --file=cimis.mk ETo 
+```
 
 # GOESBOX 
 
