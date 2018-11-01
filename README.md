@@ -5,7 +5,7 @@ data.  This will require new infrastructure (new dish and servers) and a slightl
 modified spatial CIMIS toolset to process the new spatial data.
 
 
-# Development CIMIS Process
+# Development CIMIS Processor
 
 These instructions are for setting up the spatial CIMIS program for either
 Ubuntu (UCD) or Red Hat / Fedora (DWR) based servers.
@@ -47,12 +47,13 @@ GRASS 7.4.0 (cimis):~ > g.gisenv
 ### Install and Configure Incron
 
 With incron installed ensure the cimis user can add to its incrontab file:
+
 `echo cimis >> /etc/incron.allow`
 
 ### Setup GOES.mk
 
-The following incron job copies cloud cover into grass db (goes16). 
-sudo su – cimis 
+The following incron job copies cloud cover data into the Grass DB (GOES16 or GOES17). 
+```sudo su – cimis 
 vi ~/spatial-cimis/g.cimis/etc/goes.mk 
 files:=$(wildcard /home/cimis/CA/*.pgm) 
 sudo echo cimis >> /etc/incron.allow 
@@ -61,8 +62,32 @@ incrontab –e
   grass /home/cimis/gdb/goes16/cimis \ 
   --exec /home/cimis/spatial-cimis/g.cimis/etc/goes.mk \ 
   --directory=/home/cimis/spatial-cimis/g.cimis/etc files=$@/$# import solar 
+```
 
 ### Solar Calculation
+
+The clear sky solar calculation uses the cloud cover data from the goes16 
+grass db to calculate the actual solar net radiation.  Currently runs at 
+the end of the day (not real time yet) and takes about 25 minutes for each day. 
+
+```
+grass solar/cimis 
+```
+(always start in this mapset to retain the history) 
+```cd solar 
+g.mapset 20180810 
+g.list rast  
+```
+Lists solar calculations; raster results with –G are finished.  The ssetr –G is used by the cimis program 
+```
+make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar{-n} 
+```
+solar -n                   does a check 
+```
+g.mapset 20180811 
+g.list type=rast pattern=ssetr* 
+```
+Lists ssetr –G –Gc –Gi –K rasters 
 
 # GOESBOX 
 
