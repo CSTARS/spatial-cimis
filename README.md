@@ -90,12 +90,34 @@ Lists solar calculations; raster results with –G are finished.  The ssetr –G
 ```
 make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar {-n} 
 ```
-solar -n                   does a check 
+The `-n` option does a check, doesn't actually execute.
 ```
 g.mapset 20180811 
 g.list type=rast pattern=ssetr* 
 ```
 Lists ssetr –G –Gc –Gi –K rasters 
+
+Check to see which dates have incomplete solar calculations 
+```
+for m in  201808??;do x=`g.list type=rast pattern=ssetr-G mapset=$m`;echo $m  $x;done 
+```
+This determined that 20180812 was the last day with calculations.  Must start on the 13th. 
+```
+g.mapset 20180813
+```
+The make command looks at all cloud cover datasets then runs heliosat command.  
+Run at the end of the day. (no real time calculation currently). 
+```
+make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar 
+```
+for m in 201810??;do echo $m;  
+  g.mapset $m; 
+  **make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar; **
+done 
+```
+
+### ETo Calculation
+
 
 # GOESBOX 
 
