@@ -1,0 +1,101 @@
+These are some notes about the steps that are being done to convert the old
+program into one setup for the new system.
+
+* Changes
+
+** Removal of GVAR
+
+The new goes streams do not use the gvar format, and the way we read `raw`
+images from our grb-box from automated sciences is now via exchange of PNG
+files. So, there is not requirement for r.in.gvar, gvar_inspector, libgvar, etc.
+
+** Elimination of the zipcode
+
+I think DWR might want to maintain the zipcodes, but we will be removing that
+from the setup completely.
+
+** Elimination of ca_daily_vis
+
+The ca_daily_vis is designed mostly so users can rsync only the visible data.
+However, since the GOES data is more accessible now, I think we can just use the
+PNG files as our method of exchanging missed data.
+
+
+* Operation
+
+We will still maintain a system where there operation of CIMIS project being run
+in the /home/cimis directory.  This is primarily as a way to be able to update
+the system as a regular user, esp for the DWR setup, although that is more
+difficult because of their lack of internet connectivity.
+
+
+* Comparison of r.sun to r.heliosat
+
+#+BEGIN_SRC bash
+r.sun beam_rad=beam_rad diff_rad=diff_rad refl_rad=refl_rad glob_rad=glob_rad \
+day=$(date --date=$(g.gisenv MAPSET) +%j) elevation=Z@500m
+#+END_SRC
+
+Now, these should be compared with the r.solpos outputs.
+
+#+BEGIN_SRC
+cd ..
+r.heliosat year=2018 month=06 day=15 elevin=Z@500m linkein=linke3 latitude=latitude ssha=ssh
+a
+#+END_SRC
+
+** Horizon
+One big difference w.r.t r.sun is the fact that r.sun using the horizon to find out when the local sunrise was.
+Previously, we had decided not to include this, but with 500m data, this is probably something we need to revisit.
+I'm going out on a limb and suggesting that this might be what takes r.sun awhile to run.
+
+#+BEGIN_SRC
+r.horizon elevation=Z output=horangle step=5 bufferzone=200 maxdistance=5000
+#+END_SRC
+
+* New Datasets
+
+** Elevation Maps
+
+Mui sent me a mosaiced NED 30m elevation map.  I will be using this
+as the basis for an updated cimis elevation map.  I'll project to
+EPSG, take an average of the pixels, and then project again to the
+standard 500m datasets.
+
+#+BEGIN_SRC
+# Set Processing mapset
+g.mapset location=cimis mapset=Z
+# Project into 3310 with the default region
+g.region `r.proj location=ll mapset=PERMANENT input=Z_30m method=lanczos output=Z_30m -g`
+r.proj location=ll mapset=PERMANENT input=Z_30m method=lanczos output=Z_30m
+# Get Average over 30*15=450m
+r.neighbors input=Z_30m method=average size=15 \
+ output=Z_30mx15 title="Average Elevation"
+# Also, we can do a 500m map here?
+g.region -d
+r.mapcalc expression='Z_500m=Z_30mx15'
+# Change to 500m MAPSET
+g.mapset 500m
+# Get our default prodjection
+g.region -d
+r.proj location=cimis mapset=Z input=Z_30mx15 output=Z method=lanczos_f
+#+END_SRC
+
+Yeah, comparing Z_500m@Z and Z@500m seem to indicate that they are both pretty
+much the same, and we could probably get away with using either.
+
+
+
+
+** Linke Turbidity
+
+Here are some notes on the EU new Linke Turbidity setup, but reading through these it seems like for CA, the best
+course of action is to use the MODIS aerosol optical depth measurements.  This means, that we'll need to do some
+modis downloads, hopefully similar to the sugarcane modis stuff.  For now, however, I'm going to use our old data.
+For now, that means using the same
+
+http://www.soda-pro.com/help/general-knowledge/linke-turbidity-factor
+
+https://hal.archives-ouvertes.fr/hal-00465791/document
+
+http://www.soda-pro.com/documents/10157/272214/first_trimester.zip/726c7221-fbad-4b76-80ff-79bbd9e9404f

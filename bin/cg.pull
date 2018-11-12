@@ -1,0 +1,30 @@
+#!/bin/bash
+
+GDB=~/gdb/cimis
+#GDB=~/UCD	# a test directory
+
+function get ()
+{
+	rsync -az -e "ssh -i /home/cimis/.ssh/rsync" quinn@cimis-goes-r.cstars.ucdavis.edu:/home/quinn/gdb/cimis/$(date +%Y%m%d --date="yesterday") $GDB
+}
+function move ()
+{
+	mv $GDB/$(date +%Y%m%d --date="yesterday") $GDB/$(date --iso --date="yesterday")
+}
+function archive ()
+{
+	mv $GDB/$(date --iso --date="yesterday") $GDB/$(date --iso --date="yesterday")-GOES15-$$
+}
+
+
+if [[ -d $GDB/$(date +%Y%m%d --date="yesterday") ]];then
+	echo "$GDB/$(date +%Y%m%d --date="yesterday") already exists, not pulling..."
+else
+	get
+fi
+if [[ -d $GDB/$(date --iso --date="yesterday") ]];then
+	archive
+	move
+else
+        move
+fi

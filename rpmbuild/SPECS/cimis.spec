@@ -3,11 +3,11 @@
 %define  __os_install_post %{_dbpath}/brp-compress
 
 Name:           cimis
-Version:        1.0.3
-Release:        1
+Version:        2.0.0
+Release:        2
 Summary:        Spatial CIMIS Executables
 License:        MIT
-Group:          Devellopment/Tools
+Group:          Development/Tools
 URL:            http://github.com/CSTARS/spatial-cimis
 Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -33,12 +33,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,cimis,cimis,-)
-%attr (-,root,root-) /usr/local/bin/gvar_inspector
-%attr (-,root,root-) /usr/local/lib/libgvar.so
-%attr (-,root,root-) /usr/local/lib/libgvar.so.0
-%attr (-,root,root-) /usr/local/lib/libgvar.a
-%attr (-,root,root-) /usr/local/lib/libgvar.la
-%attr (-,root,root-) /usr/local/lib/libgvar.so.0.2.0
 %attr (-,root,root-) /etc/httpd/conf.d/cimis.conf
 %attr (-,root,root-) /var/www/cimis
 %attr (-,root,root-) /var/www/html/cimis

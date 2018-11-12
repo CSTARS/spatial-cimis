@@ -1,3 +1,0 @@
-COMMAND: r.to.vect input="one" output="one" feature="line"
-GISDBASE: /home/cimis/gdb
-LOCATION: ca-daily-vis MAPSET: PERMANENT USER: cimis DATE: Tue Feb 26 23:13:12 2013
