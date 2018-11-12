@@ -76,7 +76,9 @@ ${rast}/sretr ${rast}/ssetr ${rast}/ssha:
 	r.solpos ${c_day_parms} sretr=sretr ssetr=ssetr ssha=ssha
 
 clean-tmp::
-	g.remove -f type=rast pattern=_hel*
+	g.remove -f type=rast pattern=_hel*;\
+	g.remove -f type=rast pattern=????PST-G*;\
+	g.remove -f type=rast pattern=????PST-K*
 
 clean:: clean-tmp
 	rm -f ${etc}/cloud_window;\
