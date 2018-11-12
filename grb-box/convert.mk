@@ -30,6 +30,9 @@ endef
 crop.ca:=2460x1912!+3121+2925
 crop.conus:=10000x6000!+3608+1688
 
+.PHONY:CA
+CA::
+
 $(foreach r,${b2-filtered},$(eval $(call ca-rule,$r)))
 
 INFO:
