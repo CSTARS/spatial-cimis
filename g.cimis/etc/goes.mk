@@ -37,24 +37,24 @@ mapset:${mapsets.dirs}
 ${mapsets.dirs}:${loc}/%:
 	g.mapset -c $*
 
-.PHONY: import solar
+.PHONY: import project
 import::
-solar::
+project::
 
 define import
 import::$(call f_rast,$1)
 
 $(call f_rast,$1):$1
 	g.mapset -c $(call f_mapset,$1);
-	echo -e '${import.wld}' > $(patsubst %.pgm,%.wld,$1);\
+	echo -e '$(call wld,$1)' > $(patsubst %.pgm,%.wld,$1);\
 	r.in.gdal --overwrite -o input=$1 output=$(call f_rastname,$1);\
 	rm $(patsubst %.pgm,%.wld,$1);
 
-solar::$(call f_solar_rast,$1)
+project::$(call f_solar_rast,$1)
 
 $(call f_solar_rast,$1):$(call f_rast,$1)
 	g.mapset -c location=${solar.loc} mapset=$(call f_mapset,$1);\
-	g.region ${solar.region};\
+	g.region $(call region,$(call f_rastname,$1));\
 	r.proj location=${goes.loc} mapset=$(call f_mapset,$1) \
 	  input=$(call f_rastname,$1) method=${solar.proj.method};
 endef
