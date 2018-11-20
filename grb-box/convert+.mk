@@ -39,8 +39,8 @@ size=${$(call band,$1).size}
 
 # These are the cropping values vs band size.
 05.crop.ca:=2460x1912!+3121+2925
-1.crop.ca:=1230x956!+1560+1462
-2.crop.ca:=615x478!+780+731
+1.crop.ca:=1231x957!+1560+1462
+2.crop.ca:=616x479!+780+731
 
 define ca-rule
 CA::${CA}/$(call pst-fn,$1)-$(call band,$1).pgm

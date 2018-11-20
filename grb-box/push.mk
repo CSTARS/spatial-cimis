@@ -1,6 +1,9 @@
 #!/usr/bin/make -f 
 
-ca:=$(wildcard /home/quinn/CA/*)
+#user:=${USER}
+user:=$(shell whoami)
+pushto:=CA/
+ca:=$(wildcard ~/CA/*)
 
 push:
-	rsync -avz -e "ssh -i ~/.ssh/rsync" ${ca} quinn@cimis-goes-r.cstars.ucdavis.edu:CA/
+	rsync -avz -e "ssh -i ~/.ssh/rsync" ${ca} ${user}@cimis-goes-r.cstars.ucdavis.edu:${pushto}
