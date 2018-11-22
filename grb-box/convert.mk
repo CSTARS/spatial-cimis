@@ -1,6 +1,6 @@
 #! /usr/bin/make -f 
 
-base:=/home/quinn
+base:=/home/cimis
 CA:=${base}/CA
 
 raw:=$(wildcard /grb/raw/fulldisk/satimage*-B2.pgm)

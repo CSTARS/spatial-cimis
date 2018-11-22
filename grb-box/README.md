@@ -11,8 +11,8 @@ wrapper around some makefiles.
 The incrontab file looks something like this:
 
 ``` text
-/grb/raw/fulldisk/ IN_CREATE /home/quinn/spatial-cimis/goesctl raw="$@/$#" CA
-/home/quinn/CA IN_CREATE /home/quinn/spatial-cimis/goesctl CA="$@/$#" push
+/grb/raw/fulldisk/ IN_CREATE /home/cimis/spatial-cimis/goesctl raw="$@/$#" CA
+/home/cimis/CA IN_CREATE /home/cimis/spatial-cimis/goesctl CA="$@/$#" push
 ```
 The first line monitors the incoming full-disk images, and runs the
 crop/conversion to the California domain.  The second line monitors newly

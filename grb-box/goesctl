@@ -1,2 +1,2 @@
 #!/bin/bash
-make --silent --directory=/home/quinn/spatial-cimis/grb-box -f goesctl.mk "$@"
+make --silent --directory=/home/cimis/spatial-cimis/grb-box -f goesctl.mk "$@"

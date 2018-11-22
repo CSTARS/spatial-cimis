@@ -1,0 +1,2 @@
+/grb/raw/fulldisk IN_CREATE /usr/local/grb-box/goesctl raw=$@/$# CA
+/home/cimis/CA IN_CREATE /usr/local/grb-box/goesctl ca=$@/$# push

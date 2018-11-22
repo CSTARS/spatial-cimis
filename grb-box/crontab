@@ -1,0 +1,2 @@
+1 4 * * * find /home/cimis/CA/         -mtime +21   -name \*.pgm -exec mv {} /home/cimis/CA-B2-archive/ \;
+4 4 * * * find /home/cimis/CA-archive/ -mtime +360  -name \*.pgm | xargs rm
