@@ -9,7 +9,7 @@ GDB=~/gdb/cimis
 
 function get ()
 {
-	rsync -avz -e "ssh -i /home/cimis/.ssh/ucdgoes -A cimis@10.28.200.5 ssh -i /home/cimis/.ssh/dwr-receiver" cimis@cimis-goes-r.cstars.ucdavis.edu:/home/quinn/gdb/cimis/$(date +%Y%m%d --date="yesterday") $GDB
+	rsync -avz -e "ssh -i /home/cimis/.ssh/ucdgoes -A cimis@10.28.200.5 ssh -i /home/cimis/.ssh/dwr-receiver" cimis@cimis-goes-r.cstars.ucdavis.edu:/home/cimis/gdb/cimis/$(date +%Y%m%d --date="yesterday") $GDB
 }
 function move ()
 {
