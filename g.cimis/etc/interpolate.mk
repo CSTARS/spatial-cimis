@@ -25,7 +25,7 @@ et:${vect}/et
 
 ${vect}/et:
 	db.connect driver=sqlite database='$$GISDBASE/$$LOCATION_NAME/$$MAPSET/sqlite.db'
-	v.in.et --overwrite output=et date=${YYYY}-${MM}-${DD}
+	v.in.et --overwrite api=${et.api} output=et date=${YYYY}-${MM}-${DD}
 
 # Define some .PHONY raster interpolation targets
 $(foreach p,U2 Tn Tx Tdew RHx ea es,$(eval $(call grass_raster_shorthand,$(p))))
