@@ -1,4 +1,5 @@
 @daily (find ~/CA -name '20???????????PST-B2.pgm' -mtime +21  -print0 | xargs -0 rm -rf)
 40 4-21 * * *   ~/bin/cimis-solar-cron.sh >> ~/logs/cimis-solar-cron.$(date --iso).log 2>&1
+55 4-21 * * *   ~/bin/cimis-solar-data-check.sh > ~/logs/cimis-solar-data-check.$(date --iso).log 2>&1
 0 3 * * *       ~/bin/cimis-ETo-cron.sh > ~/logs/cimis-ETo-cron.$(date --iso --date=yesterday).log 2>&1
-0 5 * * *       ~/bin/cimis-solar-clean-cron.sh > ~/logs/cimis-solar-clean-cron.$(date --iso --date=last-week).log 2>&1
+55 23 * * *     ~/bin/cimis-solar-clean-cron.sh > ~/logs/cimis-solar-clean-cron.$(date --iso --date=last-week).log 2>&1
