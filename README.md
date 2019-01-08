@@ -224,7 +224,7 @@ su - cimis ; git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis
 Pre-setup incron 
 ```
 echo cimis >> /etc/incron.allow 
-$grb-box=$(find cd /home/cimis/spatial-cimis/grb-box |grep –v README) 
+$grb-box=$(find /home/cimis/spatial-cimis/grb-box |grep –v README) 
 sudo cp -v $grb-box /usr/local/grb-box 
 sudo chmod 644 *.mk 
 sudo chmod 754 goestcl 
