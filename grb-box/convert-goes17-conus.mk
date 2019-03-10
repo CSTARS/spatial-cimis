@@ -1,4 +1,4 @@
-#! /usr/bin/make -f 
+#! /usr/bin/make -f
 
 base:=/home/cimis
 CA:=${base}/CA
@@ -28,7 +28,7 @@ ${CA}/$(call pst-fn,$1)-B2.pgm:$1
 endef
 
 crop.ca:=2543x1880!+12514+2725
-crop.conus:=10000x6000!+3608+1688
+#crop.conus:=10000x6000!+3608+1688
 
 .PHONY:CA
 CA::
