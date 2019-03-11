@@ -7,17 +7,17 @@ day=$(date +%Y%m%d)
 
 function get-all ()
 {
-for i in `grass ~/gdb/solar/$day --exec g.list rast 2>&1 |grep -E '^s[rs]|PST|^_'`;do 
+for i in `grass ~/gdb/solar/$day --exec g.list rast 2>&1 |grep -E '^s[rs]|PST|^_'`;do
 	echo -n $i
-	grass ~/gdb/solar/$day --exec r.info $i 2>&1 |grep "data:" 
+	grass ~/gdb/solar/$day --exec r.info $i 2>&1 |grep "data:"
 done
 }
 function get-p ()
 {
-for i in `grass ~/gdb/solar/$day --exec g.list rast 2>&1 |grep -E '^s[rs]|PST-P'`;do 
+for i in `grass ~/gdb/solar/$day --exec g.list rast 2>&1 |grep -E '^s[rs]|PST-P'`;do
 	echo -n $i
 	# get min and max values; change 0.* to .* for proper monitoring of true 0 integer values
-	grass ~/gdb/solar/$day --exec r.info $i 2>&1 |grep "data:" |sed 's/max = 0./max = ./g'
+	grass ~/gdb/solar/$day --exec r.info $i 2>&1 |grep "data:" |sed 's/max = 0\./max = \./g'
 done
 }
 
