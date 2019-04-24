@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# This is a special grass command only for processing UCD GOES16 grass maps on the DWR GOES15 processor
+# It uses modified png and zipcode make files ensure the zipcode database is created
+
+cg sec=png-special cmd=zipcode,html $1

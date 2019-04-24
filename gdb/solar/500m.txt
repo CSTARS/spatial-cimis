@@ -1,0 +1,2 @@
+Download the GRASS 500m DEM mapset from:
+https://ucdavis.box.com/s/d2y76umkodqhbdrjajm0tsouzcrqfwq2

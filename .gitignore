@@ -1,2 +1,19 @@
 *~
 \#*\#
+
+# Grass datasets and files
+.gislock
+.tmp/
+.bashrc
+.bash_history
+gdb/solar/20??????
+gdb/solar/quinn
+gdb/solar/cimis
+gdb/cimis/20??-??-??
+gdb/cimis/20??????
+gdb/cimis/quinn
+gdb/cimis/cimis
+gdb/goes16/20??????
+gdb/goes16/cimis
+gdb/goes16/quinn
+.idea/

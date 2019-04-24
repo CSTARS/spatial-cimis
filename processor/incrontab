@@ -1,0 +1,1 @@
+/home/cimis/CA IN_MOVED_TO grass /home/cimis/gdb/goes16/cimis --exec /home/cimis/spatial-cimis/g.cimis/etc/goes.mk --directory=/home/cimis/spatial-cimis/g.cimis/etc files=$@/$# import solar

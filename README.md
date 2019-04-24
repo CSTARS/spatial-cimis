@@ -1,137 +1,271 @@
 # Spatial CIMIS
 
-In November 2011, California Department of Water Resources have
-contracted for a revision to the current [Spatial
-CIMIS]([http://wwwcimis.water.ca.gov/cimis/cimiSatSpatialCimis.jsp)
-Evapotranspiration Model.  One requirement of this project is to make
-available the source code for the project.  This is available under
-the *cimis* code repository.  Most of the project is pretty specific
-to California, but there are some parts that may be generally useful,
-mostly GRASS GIS functions.
+For 2018 Spatial CIMIS will begin processing the next generation GOES-16/17
+data.  This will require new infrastructure (new dish and servers) and a slightly
+modified spatial CIMIS toolset to process the new spatial data.
 
-# Development Machines
 
-Here are some short descriptions of the packages needed to run the
-CIMIS application.  We have two machines, the testing/production
-machines, and the development machines.  The idea is to compile the
-spatial-cimis program on development machines, and then copy binaries
-unto the test/production machines.  This limits extraneous files on
-the production machines.
+# Development CIMIS Processor
 
-Spatial CIMIS is run primarily with the GRASS GIS program.  However,
-there are some additional steps that need to take place. These vary
-between development and test machines
+Follow these instructions to setup the spatial CIMIS program on the GOES processing server.
 
-## Software installation
+Spatial CIMIS is run primarily with the GRASS GIS program.  Additional steps 
+are required to acquire the raw GOES data and SHOULD BE RUN AS THE CIMIS USER.
 
-The development machine needs to include packages that allow both the
-operation of the software, but also the compilation of the Spatial
-GOES code.  Therefore additional development packages need to be
-installed on these systems.  Use the following commands to install the
-required packages on the production machines.
 
-``` bash
-sudo dnf update
-sudo dnf install sqlite rsync wget curl perl cronie daemonize \
-    perl-JSON perl-Date-Manip perl-TimeDate perl-Test-Pod \
-    perl-SOAP-Lite perl-XML-Simple
-sudo dnf install geos geos-devel grass grass-devel gcc
-```
-
-## Package Geo::Proj4
-The Geo::Proj4 module is not packaged as an rpm, we need to do this for the testing and production machines.
-
-``` bash
-sudo dnf install cpanspec rpm-build proj-devel
-mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
-nano ~/.rpmmacros
-    %packager Your Name <your@email>
-    %vendor <your org>
-	%_topdir /home/<your home>/rpmbuild
-    %__perl_requires %{nil}
-cpanspec Geo::Proj4
-mv perl-Geo-Proj4.spec ~/rpmbuild/SPECS/
-mv Geo-Proj4-1.09.tar.gz ~/rpmbuild/SOURCES/
-rpmbuild -ba ~/rpmbuild/SPECS/perl-Geo-Proj4.spec 
-```
-
-## Install a patched version of proj.4
-Follow the instructions for installing a patched version of proj at https://github.com/qjhart/qjhart.proj-goes-patch.
-
-## Install the grass add-ons
-
-Follow the instructions for installing a patched version of proj at
-https://github.com/qjhart/qjhart.grass-addons.  After these are
-compiled you will have two binaries, r.solpos and r.in.gvar in
-~/grass/bin.
+## Install GRASS7
 
 ## Install Spatial CIMIS
 
-Finally, we can install the spatial CIMIS program.  The files in this
-repository are designed to be installed into the base directory.  The
-following items need to be installed.
-
-### RPM Package
-
-VERSION=1.0.2
-``` bash
-VERSION=1.0.2
-cd ~/spatial-cimis/rpmbuild/SOURCES/cimis-${VERSION}
-# There are others....
-sudo rsync ~cimis/grass . -a -v --exclude=*~
+Download the Spatial CIMIS GRASS initial database and processing scripts.
+```
+sudo su - cimis
+git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis
+ln –sf spatial-cimis/gdb
+grass -text ~/gdb/cimis/PERMANENT
 ```
 
-``` bash
-tar -czf ~/spatial-cimis/rpmbuild/SOURCES/cimis-${VERSION}.tar.gz 
-
-sudo yum install cpanspec rpm-build;
-rpmbuild -ba ~/spatial-cimis/rpmbuild/SPECS/cimis.spec 
-```
-
-
-### GrassModules
-
-The grass scripts to run the program are installed into ~/grass.  This
-includes the script and etc files.  Follow the instructions in the
-[grassmodules/README.md](grassmodules/README.md) files.
-
-### Grass database, ~/gdb
-
-A working copy of the a grass database needs to be included.  A
-skeleton version is available in the `spatial-cimis/gdb` directory.  You can
-install that with: 
-
-``` bash 
-cd ; rsync -a -v spatial-cimis/gdb .  
-```
-
-Alternatively, you may simply start with an existing working grass
-database, the most important components are five LOCATIONS 
-
-  * `GOES15-SEP23-MAR20` RAW GOES Imagefiles for fall-winter
-  * `GOES15-MAR20-SEP` Raw GOES Images for spring-summer
-  * `GOES15` Symbolic link to current GOES data
-  * `ca_daily_vis` CA projection of 
-  * `cimis` Final Spatial CIMIS output
-
-
-
-## Production Machines
-
-Some the packages that are required to run the Spatial CIMIS program
-are in the ELGIS package repository.  In addition, there are currently
-two different versions of the *geos* package.  Here are the packages
-used by the Spatial CIMIS application.  Note some of these packages
-are only required by the archiver or the processor, but are included
-in a single command for simplicity, and also to allow one machine to
-fulfill both roles.
+The cimis user will need the ET APP key.   `~cimis/.grass7/rc` should contain:
 
 ```
-#!bash
-sudo yum install sqlite rsync wget curl perl cronie boost \
-perl-JSON perl-Date-Manip perl-TimeDate perl-Test-Pod \
-perl-SOAP-Lite perl-XML-Simple perl-Date-Calc \
-perl-CGI perl-XML-Writer perl-DBI perl-DBDSQLite
-sudu yum install geos grass
+MAPSET: 500m 
+ET_APPKEY: {your app key} 
+GISDBASE: /home/cimis/gdb 
+LOCATION_NAME: cimis 
+GUI: text 
 ```
+Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command.  [Install GRASS modules
+for this work](https://github.com/CSTARS/spatial-cimis/tree/GOES-16-17#install-grass-modules)
+```
+GRASS 7.4.0 (cimis):~ > v.in.et -?
+GRASS 7.4.0 (cimis):~ > g.gisenv
+```
+
+### Install and Configure Incron
+
+With incron installed ensure the cimis user can add to its incrontab file:
+
+`echo cimis >> /etc/incron.allow`
+
+### Setup GOES.mk
+
+The following incron job copies cloud cover data into the Grass DB (GOES16 or GOES17). 
+
+Edit the goes.mk file and update the following line to ensure it points to the correct
+home directory.
+```
+sudo su – cimis 
+vi ~/spatial-cimis/g.cimis/etc/goes.mk 
+```
+
+Make sure this line looks like this:
+```
+files:=$(wildcard /home/cimis/CA/*.pgm) 
+```
+Add the following incronab entry which will import into GRASS the recently acquired raw data from the receiver.
+```
+incrontab –e  
+```
+```
+/home/cimis/CA IN_MOVED_TO \ 
+  grass /home/cimis/gdb/goes16/cimis \ 
+  --exec /home/cimis/spatial-cimis/g.cimis/etc/goes.mk \ 
+  --directory=/home/cimis/spatial-cimis/g.cimis/etc files=$@/$# import solar 
+```
+
+### Install GRASS modules
+
+Download, compile r.solpos and r.heliosat using `g.extension`.  
+This process adds it to the local addons in ~/.grass7/addons. 
+
+```
+sudu su – cimis ; cd src 
+git clone https://github.com/CSTARS/r.solpos 
+cd gdb
+grass cimis/cimis 
+cd ~src/r.solpos 
+g.extension r.solpos url=/home/cimis/src/r.solpos 
+r.solpos --help 
+g.extension r.heliosat url=/home/cimis/spatial-cimis/r.heliosat 
+r.heliosat 
+g.extension extension=v.in.et url=/home/cimis/spatial-cimis/v.in.et 
+v.in.et -? 
+```
+
+### Solar Calculation
+
+The clear sky solar calculation uses the cloud cover data from the GOES16/17 
+Grass DB to calculate the actual solar net radiation.  Data is collected every 15 minutes with a daily
+solar calculation at the end of the day.  Each day's solar calculation takes about **25 minutes**. 
+
+This is an example of how to calculate the solar radiation for a day's worth of data.
+```
+grass solar/cimis 
+```
+Always start in the cimis mapset to retain bash history.  In this example we are looking at the day of
+August 1 2018.  It is assumed that the raw data has already been pushed to this processor and imported
+into GRASS.
+```
+cd solar 
+g.mapset 20180801
+make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar;
+```
+The make command will process the day's raw data and produce the necessary net radiation maps.  Once the calculation
+has finished you can run the `g.list rast` command to verify you see the following rasters with the `-G` extension were
+created.
+```
+g.list.rast type=rast pattern=ssetr*
+```
+```
+ssetr
+ssetr-G
+ssetr-Gc
+ssetr-Gi
+ssetr-K
+```
+
+You can search multiple days to determine if any past days need the solar calculation.  For example if the month
+of October raw data has been imported use this command to check each day has incomplete solar calculations.
+```
+for m in  201808??;do x=`g.list type=rast pattern=ssetr-G mapset=$m`;echo $m  $x;done 
+```
+```
+20181001 ssetr-G
+20181002
+20181003
+20181004 ssetr-G
+20181005 ssetr-G
+20181007
+20181008
+20181010 ssetr-G
+20181011 ssetr-G
+20181012 ssetr-G
+20181013 ssetr-G
+20181014 ssetr-G
+20181015 ssetr-G
+20181016 ssetr-G
+20181017 ssetr-G
+20181018 ssetr-G
+20181019 ssetr-G
+20181020 ssetr-G
+20181021 ssetr-G
+20181022 ssetr-G
+20181023 ssetr-G
+20181024 ssetr-G
+20181025 ssetr-G
+20181026 ssetr-G
+20181027 ssetr-G
+20181028 ssetr-G
+20181029 ssetr-G
+20181030 ssetr-G
+20181031 ssetr-G
+```
+
+This list shows that days 10/2, 10/3, 10/7 and 10/8 did not have solar calculations.  In this case this is a known
+GOES16 satellite outage due to solar activity so there is no data available for those days.
+
+But if you check a month and see no solar calculations (no `ssetr-g` rasters exist) you can process an entire
+months of raw data using the following loop.
+
+```
+for m in 201810??;do echo $m;  
+  g.mapset $m; 
+  make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar;
+done 
+```
+
+Note that using the `-n` switch will act as a dry run and show you what needs to be done without actually
+executing the calculation for that day.
+```
+make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar -n
+```
+
+### ETo Calculation
+Once the solar calculation for the day is complete run the final ETo calculation.
+```
+sudo su - cimis
+grass cimis/cimis 
+cd cimis 
+g.mapset 20180813 -c 
+make --directory=~/spatial-cimis/g.cimis/etc --file=cimis.mk ETo 
+```
+
+### Automation
+
+# GOESBOX 
+
+## Software Configuration (Open Suse Leap 42.3 or newer)
+
+### Incron
+
+Incron setup for grb-box.cstars.ucdavis.edu or DWR receiver.  
+[Download RPM package](https://software.opensuse.org/package/incron?search_term=incron) 
+for OpenSuse Leap 42.3 and install.
+
+`rpm -i /root/incron-0.5.10-2.1.x86_64.rpm`
+
+Register startup script:  `insserv incron`.  
+More details at http://inotify.aiken.cz/?section=incron&page=download&lang=en
+
+Create the cimis user and CA subset directory 
+```
+useradd –m –c “Spatial CIMIS” cimis
+mkdir /grb/raw/CA ; chown cimis /grb/raw/CA
+cd ; ln -sf /grb/raw/CA
+```
+Subset data should reside on the largest storage array 
+
+Clone repo 
+
+```
+su - cimis ; git clone -b GOES-16-17 https://github.com/CSTARS/spatial-cimis
+```
+
+Pre-setup incron 
+```
+echo cimis >> /etc/incron.allow 
+$grb-box=$(find /home/cimis/spatial-cimis/grb-box |grep –v README) 
+sudo cp -v $grb-box /usr/local/grb-box 
+sudo chmod 644 *.mk 
+sudo chmod 754 goestcl 
+chgrp cimis goesctl *.mk 
+
+```
+
+On the grb-box create a passwordless ssh key pair for the rsync exchange and add public key to `cimis@GOESBOX/.ssh/authorized_keys`.  Pre-pend string `from="IP of GRB Box receiver"` to limit access only from the GRB-BOX. 
+
+```
+ssh-keygen -t rsa -b 4096 -C "cimis@grb-box.cstars.ucdavis.edu"
+
+incrontab –e 
+/grb/raw/fulldisk IN_CREATE /usr/local/grb-box/goesctl raw=$@/$# CA 
+/home/cimis/CA IN_CREATE /usr/local/grb-box/goesctl ca=$@/$# push 
+```
+
+Initially connect with the rsync ssh connection with the key pairs to accept the connection.  The incrontab session should now be pushing CA cropped band 2 images to the cimis server. 
+
+Keep the last 6 months of CA subsetted data on the grb-box 
+
+```crontab -e 
+4 4 * * * find /home/cimis/CA/ -mtime +180  -name \*.pgm | xargs rm 
+```
+
+# Final Configuration
+
+## Pushing GOES16 Data
+
+### UCD GOES16 data replaces DWR GOES15 data
+As of October 23rd 2018 the production DWR and UCD Spatial CIMIS processors no longer processes GOES15 data from their respective on site dishes and receivers.  Instead they pull daily GOES16 CIMIS data products from the UCD GOES16 processor and use existing processes to continue to provide raster outputs, Arc/Info ASCII Grid output as well as ETo data for the webAPI.
+
+Each GOES15 processor run scripts as the `cimis` user to accomplish this.
+
+3:15am `/home/cimis/bin/cg.tunnel` 
+
+Pulls daily GOES16 grass maps to `/home/cimis/gdb/cimis`
+
+3:30am `/home/cimis/bin/cg.grass.script /home/cimis/bin/cg.daily.output`
+
+The `cg.daily.output` grass script runs a modified version of the raster output grass makefile `png-special` which creates the daily raster images and zipcodes.
+
+Scripts available in this [repo](https://github.com/CSTARS/spatial-cimis/tree/GOES-16-17/bin).
 
