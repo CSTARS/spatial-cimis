@@ -9,27 +9,9 @@ my $xml;
 my $q=new CGI();
 
 # Read configuration
-$CG_GISDBASE=`. /etc/default/cg; echo \$CG_GISDBASE`;
+$CG_GISDBASE=`. /data/quinn/spatial-cimis/config.sh echo \$CG_GISDBASE`;
 chomp $CG_GISDBASE;
-$CG_GRASS_ADDON_PATH=`. /etc/default/cg; echo \$CG_GRASS_ADDON_PATH`;
-chomp $CG_GRASS_ADDON_PATH;
-$CG_GRASS_ADDON_ETC=`. /etc/default/cg; echo \$CG_GRASS_ADDON_ETC`;
-chomp $CG_GRASS_ADDON_ETC;
-
-# Setup up GRASS
-my $dir=tempdir('/tmp/grass6-wms-XXXX',CLEANUP=>1);
-open(GISRC,">$dir/gisrc") || die "Can't open GISRC file $dir/gisrc";
-#printf GISRC "LOCATION_NAME: cimis\nMAPSET: cimis\nGISDBASE: ${CG_GISDBASE}\nGRASS_GUI: text\n";
-printf GISRC "LOCATION_NAME: cimis\nMAPSET: apache\nGISDBASE: ${CG_GISDBASE}\nGRASS_GUI: text\n";
-close GISRC;
-
-$ENV{GISBASE}=`pkg-config --variable=prefix grass`;
-chomp $ENV{GISBASE};
-$ENV{PATH}="${CG_GRASS_ADDON_PATH}:$ENV{GISBASE}/bin:$ENV{GISBASE}/scripts:$ENV{PATH}";
-$ENV{GRASS_ADDON_ETC}=${CG_GRASS_ADDON_ETC};
-$ENV{LD_LIBRARY_PATH}=`pkg-config --variable=libdir grass`;
-chomp $ENV{LD_LIBRARY_PATH};
-$ENV{GISRC}="$dir/gisrc";
+$CG_GISDBASE='/data/cimis/gdb';
 
 my $date=$q->param('TIME');
 my $zipcode=$q->param('ZIPCODE');
@@ -45,19 +27,21 @@ my $fail_on_err=$q->param('FAIL_ON_ERR') || 'on_last';
 my $cmd;
 if (defined(param('REQUEST')) and (lc(param('REQUEST')) eq 'getfeatureinfo')) {
     $cmd=join(' ',
-	      ("cg.cgi",
+	      ("grass --text $CG_GISDBASE/cimis/quinn --exec cg.cgi",
 	       ($item)?"item=$item":'',
 	       ($zipcode)?"zipcode=$zipcode":'',
 	       ($date)?"date=$date":'',
 	       ($srid)?"srid=$srid":'',
-	       ($BBOX)?"BBOX=$BBOX":'',
-	       ($HEIGHT)?"HEIGHT=$HEIGHT":'',
-	       ($WIDTH)?"WIDTH=$WIDTH":'',
-	       ($X)?"X=$X":'',
-	       ($Y)?"Y=$Y":'',
+	       ($BBOX)?"bbox=$BBOX":'',
+	       ($HEIGHT)?"height=$HEIGHT":'',
+	       ($WIDTH)?"width=$WIDTH":'',
+	       ($X)?"x=$X":'',
+	       ($Y)?"y=$Y":'',
 	      )
 	);
-    
+
+    print $cmd;
+
     $xml=`$cmd`;
     my $status=200;
     if ($fail_on_err eq 'never') {
