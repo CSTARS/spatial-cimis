@@ -3,11 +3,11 @@ use XML::Writer;
 use JSON;
 use DBI;
 
-my $zipdb=`g.gisenv get=CG_ZIPCODE_DB`;
+my $zipdb=`. /apps/cimis/config.sh; echo \$CG_ZIPCODE_DB`;
 chomp $zipdb;
 my $dsn="dbi:SQLite:dbname=$zipdb";
 
-my %units =
+my %units = 
   (
    ETo=>"[mm]",
    Rs=>"[W/m^2]",
@@ -31,14 +31,14 @@ my %units =
 #%option
 #% key: date
 #% type: string
-#% description: Date(s) of interest
+#% description: Date(s) of interest 
 #% multiple: yes
 #% required : no
 #%end
 #%option
 #% key: srid
 #% type: string
-#% description: EPSG SRID
+#% description: EPSG SRID 
 #% multiple: no
 #% answer:3310
 #% required : yes
@@ -68,21 +68,21 @@ my %units =
 #%end
 
 #%option
-#% key: x
+#% key: X
 #% type: string
 #% description: Box Pointer X
 #% multiple: yes
 #% required : no
 #%end
 #%option
-#% key: y
+#% key: Y
 #% type: string
 #% description: Box Pointer Y
 #% multiple: yes
 #% required : no
 #%end
 #%option
-#% key: bbox
+#% key: BBOX
 #% type: string
 #% description: Bounding Box (e,s,w,n)
 #% multiple: no
@@ -90,7 +90,7 @@ my %units =
 #% required : yes
 #%end
 #%option
-#% key: height
+#% key: HEIGHT
 #% type: string
 #% description: Box Height
 #% multiple: no
@@ -98,7 +98,7 @@ my %units =
 #% required : yes
 #%end
 #%option
-#% key: width
+#% key: WIDTH
 #% type: string
 #% description: Box width
 #% multiple: no
@@ -119,7 +119,7 @@ if (!defined($ARGV[0]) or ($ARGV[0] ne '@ARGS_PARSED@')) {
     exit;
 }
 
-my $yesterday=`date --date=yesterday +%Y%m%d`;
+my $yesterday=`date --date=yesterday --iso`;
 chomp $yesterday;
 
 # Dates have special ':' processing
@@ -129,18 +129,12 @@ my @date=map { split /,/ } $date;
   if (/\:/) {
     my ($s,$e) = split /\:/;
     my @t;
-    $s=`date --date='$s' +%Y%m%d`;
-    chomp $s;
-    $e=`date --date='$e' +%Y%m%d`;
-    chomp $e;
-    for(my $date=$s; $date ne $e; $date=`date --date='$date +1 day' +%Y%m%d`,chomp $date) {
+    for(my $date=$s; $date ne $e; $date=`date --date='$date +1 day' --iso`,chomp $date) {
       push @t,$date;
     }
   (@t,$e);
   } else {
-      $_=`date --date='$_' +%Y%m%d`;
-      chomp;
-      $_
+    $_;
   }
 } @date;
 
@@ -183,7 +177,7 @@ if ($ENV{GIS_OPT_ZIPCODE}) {
     }
 
 
-    $cmd.=sprintf(" srid=%s bbox='%s' width=%d height=%d x='%s' y='%s'",
+    $cmd.=sprintf(" srid=%s BBOX='%s' WIDTH=%d HEIGHT=%d X='%s' Y='%s'",
 		  $srid,$bbox,$width,$height,join(',',@X),join(',',@Y));
 }
 
@@ -233,13 +227,13 @@ if (@zipcode) {
 	 "select * from zipcode_daily where d_date in (%s) and zipcode in (%s) order by d_date,zipcode;",
 	 join(',',map(qq{'$_'},@date)),
 	 join(',',map(qq{'$_'},@zipcode)));
-
+    
     my $sth=$dbh->prepare($sql);
     my $rv=$sth->execute;
     while (my $r=$sth->fetchrow_hashref) {
 	$dates{$r->{d_date}}++;
 	$zipcodes{$r->{zipcode}}++;
-
+      
 	$xml->startTag("DataPoint",
 		       zipcode=>$r->{zipcode},
 		       date=>$r->{d_date},
@@ -276,45 +270,28 @@ if (@zipcode) {
 	}
     }
     # Now check the missing zipcodes
-    grep { $xml->emptyTag("DataPoint",zipcode=>$_,err=>'not_found')
+    grep { $xml->emptyTag("DataPoint",zipcode=>$_,err=>'not_found') 
 	       and $xml->characters("\n") unless $zipcodes{$_}} @zipcode;
 }
 
-# Checked dynamically below to work on GOES15 and GOES17
-my $state_mapset;
-if ( ! system "g.findfile --quiet file=state mapset=500m element=cellhd > /dev/null" ) {
-    $state='state@500m'; 
-}		
-elsif ( ! system "g.findfile --quiet file=state mapset=2km element=cellhd > /dev/null" ) {
-    $state='state@2km'; 
-} else {
-    die "No State Map Found\n";
-}
-my $date_format='';
 # Do for each input point;
 for (my $k=0; $k<= $#$in_points_3310; $k++) {
     foreach my $date (@date) {
 	my @err;
 	# First check we have this date
-	if ( ( $date_format eq '' or $date_format eq 'YMD' ) && 
-	     ! system "g.findfile --quiet file=ETo mapset=$date element=cellhd > /dev/null" ) {
-	    $date_format='YMD'; 
-	}		
-	else { # Try next format
-	    $date=~s/^(....)(..)(..)$/$1-$2-$3/;	    
-	    if ( ( $date_format eq '' or $date_format eq 'Y-M-D' ) &&
-		! system "g.findfile --quiet file=ETo mapset=$date  element=cellhd > /dev/null" ) {
-		$date_format='Y-M-D'; 
-	    } else {
-		push @err,"date_not_found";
-	    }
-	}
+	my $ans=`g.findfile mapset=$date file=ETo element=cellhd | grep ^name`;
+	chomp $ans;
+
 	my ($x,$y);
 	my ($lat,$lon);
+
+	# We could push both these errors, but I only check for date_not_found
+	
+	push @err,"date_not_found" if ($ans ne "name='ETo'");
 	# Check we're in CA
 	($x,$y)=@{$$in_points_3310[$k]};
 	($lon,$lat)=@{$$in_points_4269[$k]};
-	$ans=`echo $x $y | r.what $state`;
+	$ans=`echo $x $y | r.what state\@2km`;
 	chomp $ans;
 	(undef,undef,undef,$ans)=split(/\|/,$ans);
 	push @err,"not_in_CA" unless ($ans eq 1);
@@ -339,8 +316,8 @@ for (my $k=0; $k<= $#$in_points_3310; $k++) {
 		my $name=$item[$i];
 		$attr{units}=$units{$name} if $units{$name};
 		# Quick Fix for Radiance
-		$val *= 11.574074 if ($val and
-				      ($name eq 'Rn' or $name eq 'Rnl' or
+		$val *= 11.574074 if ($val and 
+				      ($name eq 'Rn' or $name eq 'Rnl' or 
 				       $name eq 'Rs' or $name eq 'Rso'));
 		$xml->dataElement($name,$val,%attr);
 		$xml->characters("\n");
