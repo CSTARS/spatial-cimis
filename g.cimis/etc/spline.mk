@@ -86,7 +86,7 @@ $(rast)/z_$(1)_lr$(2)_t$(3)_s$(4): ${vect}/z_normal
 # ReUnNormalized back to Elevation
 $(rast)/$(1)_ns: $(rast)/z_$(1)_lr$(2)_t$(3)_s$(4)
 	$(call NOMASK)\
-	$(call calc,$(1)_ns,z_$(1)_lr$(2)_t$(3)_s$(4)-$(2)*Z@2km/1000)
+	$(call calc,$(1)_ns,z_$(1)_lr$(2)_t$(3)_s$(4)-$(2)*Z@500m/1000)
 
 endef
 

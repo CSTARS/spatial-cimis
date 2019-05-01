@@ -29,7 +29,7 @@ clean::
 	g.remove rast=ETo,FAO_ETo
 
 DEL:=(4098.17*0.6108*(exp(Tm*17.27/(Tm+237.3)))/(Tm+237.3)^2)
-GAM:=psychrometric_constant@2km
+GAM:=psychrometric_constant@500m
 
 ETo=(900.0*${GAM}/(Tm+273)*U2*(es-ea)+0.408*${DEL}*($1*(1.0-0.23)+Rnl))/(${DEL}+${GAM}*(1.0+0.34*U2))
 

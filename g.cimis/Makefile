@@ -4,7 +4,7 @@ PGM = g.cimis
 
 include $(MODULE_TOPDIR)/include/Make/Script.make
 
-ETCFILES = goes.mk
+ETCFILES = config.mk goes.mk insolation.mk interpolate.mk cimis.mk spline.mk
 DSTFILES := $(patsubst %,$(ETC)/g.cimis/%,$(ETCFILES))
 
 default: script $(DSTFILES)

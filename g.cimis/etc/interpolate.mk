@@ -16,7 +16,8 @@ V.info=@
 info::
 	@echo interpolate.mk
 
-calc=r.mapcalc --overwrite --quiet expression="$1=$(subst ",\",$2)"
+calc=r.mapcalc --overwrite --quiet expression="$1=$(subst ",\",$2)" 
+#"
 
 ###############################################################
 # All interpolations depend on the etxml vector
@@ -25,7 +26,7 @@ et:${vect}/et
 
 ${vect}/et:
 	db.connect driver=sqlite database='$$GISDBASE/$$LOCATION_NAME/$$MAPSET/sqlite.db'
-	v.in.et --overwrite output=et date=${YYYY}-${MM}-${DD}
+	v.in.et --overwrite api=${ET_URL} output=et date=${YYYY}-${MM}-${DD}
 
 # Define some .PHONY raster interpolation targets
 $(foreach p,U2 Tn Tx Tdew RHx ea es,$(eval $(call grass_raster_shorthand,$(p))))
