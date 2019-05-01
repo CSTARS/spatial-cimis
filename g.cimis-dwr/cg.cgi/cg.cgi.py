@@ -280,24 +280,41 @@ if (@zipcode) {
 	       and $xml->characters("\n") unless $zipcodes{$_}} @zipcode;
 }
 
+# Checked dynamically below to work on GOES15 and GOES17
+my $state_mapset;
+if ( ! system "g.findfile --quiet file=state mapset=500m element=cellhd > /dev/null" ) {
+    $state='state@500m'; 
+}		
+elsif ( ! system "g.findfile --quiet file=state mapset=2km element=cellhd > /dev/null" ) {
+    $state='state@2km'; 
+} else {
+    die "No State Map Found\n";
+}
+my $date_format='';
 # Do for each input point;
 for (my $k=0; $k<= $#$in_points_3310; $k++) {
     foreach my $date (@date) {
 	my @err;
 	# First check we have this date
-	my $ans=`g.findfile mapset=$date file=ETo element=cellhd | grep ^name`;
-	chomp $ans;
-
+	if ( ( $date_format eq '' or $date_format eq 'YMD' ) && 
+	     ! system "g.findfile --quiet file=ETo mapset=$date element=cellhd > /dev/null" ) {
+	    $date_format='YMD'; 
+	}		
+	else { # Try next format
+	    $date=~s/^(....)(..)(..)$/$1-$2-$3/;	    
+	    if ( ( $date_format eq '' or $date_format eq 'Y-M-D' ) &&
+		! system "g.findfile --quiet file=ETo mapset=$date  element=cellhd > /dev/null" ) {
+		$date_format='Y-M-D'; 
+	    } else {
+		push @err,"date_not_found";
+	    }
+	}
 	my ($x,$y);
 	my ($lat,$lon);
-
-	# We could push both these errors, but I only check for date_not_found
-
-	push @err,"date_not_found" if ($ans ne "name='ETo'");
 	# Check we're in CA
 	($x,$y)=@{$$in_points_3310[$k]};
 	($lon,$lat)=@{$$in_points_4269[$k]};
-	$ans=`echo $x $y | r.what state\@2km`;
+	$ans=`echo $x $y | r.what $state`;
 	chomp $ans;
 	(undef,undef,undef,$ans)=split(/\|/,$ans);
 	push @err,"not_in_CA" unless ($ans eq 1);

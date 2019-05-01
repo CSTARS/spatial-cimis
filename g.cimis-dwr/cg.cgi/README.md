@@ -2,19 +2,22 @@ The cg.cgi program is a grass command that is basically designed to
 handle requests from the wms.cgi program.  This is an ancient methodology
 that was designed in 2003, at the initial stages of the CIMIS program.
 
-Despite strong objecctions from the Spatial CIMIS developers, the wms.cgi interface
-has not been depreciated in the DWR framework
+Despite strong objecctions from the Spatial CIMIS developers, the
+wms.cgi interface has not been depreciated in the DWR framework
 
 ## Installation
 
-Because the wms.cgi program is so very old, no strong attempt at a simple installation has been made.  Instead users
-must follow the steps below.
+Because the wms.cgi program is so very old, no strong attempt at a
+simple installation has been made.  Instead users must follow the
+steps below.
 
 ### cg.cgi installation
 
-This is the grass command that reformats the WMS requests into grass commands, and formats the data as XML.  This program
-calls a grass command for EVERY date and EVERY mapset that is passed into the query.  Because of this, the program is quite
-suspetable to DOS attacks, even simple queries from regular users can cause this DOS attacks.
+This is the grass command that reformats the WMS requests into grass
+commands, and formats the data as XML.  This program calls a grass
+command for EVERY date and EVERY mapset that is passed into the query.
+Because of this, the program is quite suspetable to DOS attacks, even
+simple queries from regular users can cause this DOS attacks.
 
 ``` bash
 # Within this (cg.cgi) directory, run the following command
@@ -25,8 +28,9 @@ This adds command to the grass user.
 
 ### wms.cgi
 
-This file needs to be moved to the executable location of the new server, eg. /var/www/wms/wms.cgi.
-In addition, an `./htaccess` file like below, may need to be included as well.
+This file needs to be moved to the executable location of the new
+server, eg. /var/www/wms/wms.cgi.  In addition, an `./htaccess` file
+like below, may need to be included as well.
 
 ```text
 AddHandler cgi-script .cgi .pl
@@ -94,7 +98,9 @@ Which is located at the same point as the previous
 </data>
 ```
 
-In addition, you can ask for multiple points.  Additionally you can request a set of dates, either separeted by commas, or a range with a colon
+In addition, you can ask for multiple points.  Additionally you can
+request a set of dates, either separeted by commas, or a range with a
+colon
 
 ```bash
 cg.cgi srid=4269 point=[-122.3512,40.2436] point=[-123,40]
@@ -107,7 +113,8 @@ cg.cgi srid=4269 point=[-122.3512,40.2436]  date=2019-01-10:2019-01-15,2019-01-2
 
 ## WMS Script
 
-The WMS script uses a basterized version of the OpenGIS WMS protocol.  You can test this from the command line, eg.
+The WMS script uses a basterized version of the OpenGIS WMS protocol.
+You can test this from the command line, eg.
 
 ``` bash
 perl wms.cgi "REQUEST=getfeatureinfo&SRID=4269&X=-123&Y=50&TIME=2019-01-10&BBOX=0,-90,180,90&HEIGHT=180&WIDTH=180" 2> /dev/null$
