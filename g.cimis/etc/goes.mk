@@ -18,7 +18,7 @@ f_rast=${loc}/$(call f_mapset,$1)/cellhd/$(call f_rastname,$1)
 f_solar_rast=${GISDBASE}/${solar.loc}/$(call f_mapset,$1)/cellhd/$(call f_rastname,$1)
 
 
-files:=$(wildcard /home/quinn/CA/*.pgm)
+files:=$(wildcard /home/cimis/CA/*.pgm)
 mapsets:=$(sort $(foreach f,${files},$(call f_mapset,$f)))
 
 info::
