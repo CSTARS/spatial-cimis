@@ -3,7 +3,8 @@ use XML::Writer;
 use JSON;
 use DBI;
 
-my $zipdb=`g.gisenv get=CG_ZIPCODE_DB`;
+# Need to add to configurations
+my $zipdb=`g.gisenv get=cg_ZIPCODE_DB`;
 chomp $zipdb;
 my $dsn="dbi:SQLite:dbname=$zipdb";
 

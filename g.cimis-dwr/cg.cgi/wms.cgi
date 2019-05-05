@@ -8,9 +8,7 @@ use XML::XPath::Parser;
 my $xml;
 my $q=new CGI();
 
-# Read configuration
-$CG_GISDBASE=`. /data/quinn/spatial-cimis/config.sh echo \$CG_GISDBASE`;
-chomp $CG_GISDBASE;
+# Need to set the proper GISDBASE for operation.
 $CG_GISDBASE='/data/cimis/gdb';
 
 my $date=$q->param('TIME');

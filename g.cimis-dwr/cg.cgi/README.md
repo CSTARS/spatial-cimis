@@ -24,19 +24,32 @@ simple queries from regular users can cause this DOS attacks.
 g.extension extension=cg.cgi url=. operation=add
 ```
 
-This adds command to the grass user.
+This adds the `cg.cgi` command to the grass user.  In addition to
+this, the user needs to set the `CG_ZIPCODE_DB` file for operation.
+This is done with the `g.gisenv set=CG_ZIPCODE_DB=/app/cimis/cimis.db`
+command for example.
 
 ### wms.cgi
 
-This file needs to be moved to the executable location of the new
-server, eg. /var/www/wms/wms.cgi.  In addition, an `./htaccess` file
-like below, may need to be included as well.
+In addition to the `cg.cgi` executable, the `wms.cgi` file connects
+this to the internet.  This file needs to be moved to the executable
+location of the new server, eg. /var/www/wms/wms.cgi.  In addition, an
+`./htaccess` file like below, may need to be included as well.
 
 ```text
 AddHandler cgi-script .cgi .pl
 Options +ExecCGI
 ```
 
+Once installed, the ~wms.cgi~ script needs to be modified to point to
+the proper GISDBASE.  Look for this section in the script.
+
+``` perl
+# Need to set the proper GISDBASE for operation.
+$CG_GISDBASE='/data/cimis/gdb';
+```
+
+And set the location appropriately.
 
 ## Tests
 
