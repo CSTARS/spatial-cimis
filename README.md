@@ -25,7 +25,13 @@ ln –sf spatial-cimis/gdb
 grass -text ~/gdb/cimis/PERMANENT
 ```
 
-The cimis user will need the ET APP key.   `~cimis/.grass7/rc` should contain:
+### Configuration
+
+There are a number of configuration parameters that are required for
+operation.  The `cimis` user needs to identify the GOES receiver, the
+ET_APP Application key, and the ET_URL to use to request the data.
+
+`~cimis/.grass7/rc` should look something like this:
 
 ```
 MAPSET: 500m 
@@ -34,9 +40,21 @@ GISDBASE: /home/cimis/gdb
 LOCATION_NAME: cimis 
 GUI: text 
 ```
-Verify ET_APPKEY by running GRASS and checking with the `v.in.et -?` command.  [Install GRASS modules
-for this work](https://github.com/CSTARS/spatial-cimis/tree/GOES-16-17#install-grass-modules)
+
+You can set these parameters, using the g.gisenv parameter.  You only
+have to do this one time.
+
+```bash
+g.gisenv set=GOES=17
+g.gisenv set=ET_URL=https://et.water.ca.gov/api
+g.gisenv set=ET_APPKEY=${secret_key}
 ```
+
+Verify ET_URL and ET_APPKEY both work by running GRASS and checking
+with the `v.in.et -?` command.  [Install GRASS modules for this
+work](https://github.com/CSTARS/spatial-cimis/tree/GOES-16-17#install-grass-modules)
+
+```bash
 GRASS 7.4.0 (cimis):~ > v.in.et -?
 GRASS 7.4.0 (cimis):~ > g.gisenv
 ```
