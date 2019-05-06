@@ -1,12 +1,9 @@
 MODULE_TOPDIR =../..
 
-PGM = g.cimis-dwr
-
-SUBDIRS = cg.cgi cg.zipcode.summary
+SUBDIRS = cg.cgi cg.zipcode.summary g.cimis-dwr
 
 include $(MODULE_TOPDIR)/include/Make/Dir.make
 
-default: parsubdirs htmldir
+default: parsubdirs
 
 install: installsubdirs
-	$(INSTALL_DATA) $(PGM).html $(INST_DIR)/docs/html/

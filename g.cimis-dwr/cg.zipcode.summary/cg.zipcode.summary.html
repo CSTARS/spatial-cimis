@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>GRASS GIS manual: cg.zipcode.summary.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="grassdocs.css" type="text/css">
+</head>
+<body bgcolor="white">
+<div id="container">
+
+<a href="index.html"><img src="grass_logo.png" alt="GRASS logo"></a>
+<hr class="header">
+
+<h2>NAME</h2>
+<em><b>cg.zipcode.summary.py</b></em>  - CIMIS specific command to create zipcode_summaries
+<h2>KEYWORDS</h2>
+<a href="CIMIS,evapotranspiration.html">CIMIS,evapotranspiration</a>
+<h2>SYNOPSIS</h2>
+<div id="name"><b>cg.zipcode.summary.py</b><br></div>
+<b>cg.zipcode.summary.py --help</b><br>
+<div id="synopsis"><b>cg.zipcode.summary.py</b> [-<b>nnn</b>]  [<b>delimiter</b>=<em>string</em>]  <b>rast</b>=<em>string</em>[,<i>string</i>,...]  [<b>nodata</b>=<em>string</em>]   [--<b>help</b>]  [--<b>verbose</b>]  [--<b>quiet</b>]  [--<b>ui</b>] 
+</div>
+
+<div id="flags">
+<h3>Flags:</h3>
+<dl>
+<dt><b>-n</b></dt>
+<dd>Do not print header information</dd>
+
+<dt><b>-n</b></dt>
+<dd>Do not print count of pixels per zipcode</dd>
+
+<dt><b>-n</b></dt>
+<dd>Do not mapset name to output</dd>
+
+<dt><b>--help</b></dt>
+<dd>Print usage summary</dd>
+<dt><b>--verbose</b></dt>
+<dd>Verbose module output</dd>
+<dt><b>--quiet</b></dt>
+<dd>Quiet module output</dd>
+<dt><b>--ui</b></dt>
+<dd>Force launching GUI dialog</dd>
+</dl>
+</div>
+
+<div id="parameters">
+<h3>Parameters:</h3>
+<dl>
+<dt><b>delimiter</b>=<em>string</em></dt>
+<dd>delimiter for table</dd>
+<dd>Default: <em>,</em></dd>
+
+<dt><b>rast</b>=<em>string[,<i>string</i>,...]</em>&nbsp;<b>[required]</b></dt>
+<dd>Default Rasters to include</dd>
+<dd>Default: <em>Tn,Tx,U2,ea,Gc,G,K,Rnl,ETo</em></dd>
+
+<dt><b>nodata</b>=<em>string</em></dt>
+<dd>What to replace your no-data values with</dd>
+<dd>Default: <em>*</em></dd>
+
+</dl>
+</div>
+</body>
+</html>
