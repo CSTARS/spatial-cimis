@@ -44,7 +44,7 @@ ${rast}/ssha:
 ${rast}/FAO_Rso: ${rast}/ssha
 	@$(call NOMASK)\
 	eval `r.solpos -r ${c_day_parms}`; \
-	$(call calc,FAO_Rso,(0.0036)*(0.75+0.00002*'Z@2km')*$$etrn*24/3.14159*((ssha*3.14159/180)*sin(latitude_deg@2km)*sin($$declin)+cos(latitude_deg@2km)*cos($$declin)*sin(ssha)));\
+	$(call calc,FAO_Rso,(0.0036)*(0.75+0.00002*'Z@500m')*$$etrn*24/3.14159*((ssha*3.14159/180)*sin(latitude_deg@500m)*sin($$declin)+cos(latitude_deg@500m)*cos($$declin)*sin(ssha)));\
 	@r.colors map=$(notdir $<) rast=Rso@default_colors > /dev/null
 
 clean::

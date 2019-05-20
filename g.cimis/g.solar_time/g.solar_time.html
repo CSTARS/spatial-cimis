@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>GRASS GIS manual: g.solar_time</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="grassdocs.css" type="text/css">
+</head>
+<body bgcolor="white">
+<div id="container">
+
+<a href="index.html"><img src="grass_logo.png" alt="GRASS logo"></a>
+<hr class="header">
+
+<h2>NAME</h2>
+<em><b>g.solar_time</b></em>  - Display various solar time variables for a solar mapset
+<h2>KEYWORDS</h2>
+<a href="CIMIS_evapotranspiration.html">CIMIS evapotranspiration</a>
+<h2>SYNOPSIS</h2>
+<div id="name"><b>g.solar_time</b><br></div>
+<b>g.solar_time --help</b><br>
+<div id="synopsis"><b>g.solar_time</b>  [<b>cmd</b>=<em>string</em>]   [<b>rast</b>=<em>name</em>]   [--<b>help</b>]  [--<b>verbose</b>]  [--<b>quiet</b>]  [--<b>ui</b>] 
+</div>
+
+<div id="flags">
+<h3>Flags:</h3>
+<dl>
+<dt><b>--help</b></dt>
+<dd>Print usage summary</dd>
+<dt><b>--verbose</b></dt>
+<dd>Verbose module output</dd>
+<dt><b>--quiet</b></dt>
+<dd>Quiet module output</dd>
+<dt><b>--ui</b></dt>
+<dd>Force launching GUI dialog</dd>
+</dl>
+</div>
+
+<div id="parameters">
+<h3>Parameters:</h3>
+<dl>
+<dt><b>cmd</b>=<em>string</em></dt>
+<dd>Command: solpos | sretr | ssetr | daynight | prev | risedayset | day_parms | sretr_parms | ssetr_parms</dd>
+
+<dt><b>rast</b>=<em>name</em></dt>
+<dd>Name of raster map</dd>
+
+</dl>
+</div>
+
+<p>
+g.solar_time is a simple set of scripts that give some information
+about the rasters within a solar mapset, that are named by their
+timestamp.  It's basically a simple method to determine if mapsets are
+in the day or night, and when their previous mapset was.
+</p>
+
+</body>
+</html>

@@ -2,10 +2,10 @@
 
 ############################################################################
 #
-# MODULE:       cg for GRASS 6
+# MODULE:       g.cimis-dwer
 # AUTHOR(S):    Quinn Hart qjhart at ucdavis
-# PURPOSE:      To perform Spatial CIMIS calculations
-# COPYRIGHT:    (C) 2012 by Quinn Hart
+# PURPOSE:      To perform old GOES15 cimis services (zipcode,cgi)
+# COPYRIGHT:    (C) 2012-2019 by Quinn Hart
 #
 #               This program is free software under the GNU General Public
 #               License (>=v2). Read the file COPYING that comes with GRASS
@@ -14,24 +14,28 @@
 #############################################################################
 
 #%Module
-#%  description: Performs steps for Spatial CIMIS calculations
-#%  keywords: CIMIS evapotranspiration
+#%  description: Peforms workflows for DWR GOES15 services; zipcode summaries.
+#%  keywords: CIMIS evapotranspiration, zipcodes
 #%End
+
 #%flag
 #% key: l
 #% description: List commands
 #% guisection: Main
 #%end
+
 #%flag
 #% key: n
 #% description: dry-run (Pass -n to make command)
 #% guisection: Main
 #%end
+
 #%flag
 #% key: B
 #% description: force (Pass -B to make command)
 #% guisection: Main
 #%end
+
 #%option
 #% key: cmd
 #% type: string
@@ -40,26 +44,20 @@
 #% required: no
 #% guisection: Main
 #%end
+
 #%option
 #% key: sec
 #% type: string
-#% description: Spatial CIMIS command section
-#% answer: cimis
+#% description: Spatial CIMIS command section, (Makefile to use)
+#% answer: g.cimis-dwr
 #% required: yes
 #% guisection: Main
 #%end
-#%option
-#% key: etc
-#% type: string
-#% description: Debug etc location 
-#% multiple: no
-#% required: no
-#% guisection: Main
-#%end
+
 #%option
 #% key: make
 #% type: string
-#% description: Make command
+#% description: Make command.  If you want to use a different directory, for debugging eg. use 'make -I <dir>' to add that in.
 #% answer: make --no-builtin-rules
 #% multiple: no
 #% required: no
@@ -111,15 +109,8 @@ exitprocedure()
 }
 trap "exitprocedure" 2 3 15
 
-if [ -z $GIS_OPT_ETC ] ; then
-    if [ -d ${GRASS_ADDON_ETC}/cg ] ; then
-	etc=${GRASS_ADDON_ETC}/cg
-    else
-	etc=${GISBASE}/etc/cg
-    fi
-else
-    etc=$GIS_OPT_ETC
-fi
+
+etc=$(dirname ${BASH_SOURCE[0]})/../etc/$(basename ${BASH_SOURCE[0]})
 
 make=${GIS_OPT_MAKE}
 if [ $GIS_FLAG_N -eq 1 ] ; then

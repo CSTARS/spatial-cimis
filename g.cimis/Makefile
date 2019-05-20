@@ -1,16 +1,9 @@
-MODULE_TOPDIR = ../..
+MODULE_TOPDIR =../..
 
-PGM = g.cimis
+SUBDIRS = g.cimist g.cimis
 
-include $(MODULE_TOPDIR)/include/Make/Script.make
+include $(MODULE_TOPDIR)/include/Make/Dir.make
 
-ETCFILES = goes.mk
-DSTFILES := $(patsubst %,$(ETC)/g.cimis/%,$(ETCFILES))
+default: parsubdirs
 
-default: script $(DSTFILES)
-
-$(ETC)/g.cimis/%: etc/% $(ETC)/g.cimis
-	$(INSTALL) $< $@
-
-#$(ETC)/g.cimis:
-#	$(MKDIR) $@
+install: installsubdirs

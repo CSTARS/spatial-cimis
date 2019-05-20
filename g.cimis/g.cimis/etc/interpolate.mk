@@ -16,7 +16,8 @@ V.info=@
 info::
 	@echo interpolate.mk
 
-calc=r.mapcalc --overwrite --quiet expression="$1=$(subst ",\",$2)"
+calc=r.mapcalc --overwrite --quiet expression="$1=$(subst ",\",$2)" 
+#"
 
 ###############################################################
 # All interpolations depend on the etxml vector
