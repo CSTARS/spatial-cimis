@@ -60,33 +60,28 @@ GISDBASE:=$(shell g.gisenv get=GISDBASE)
 LOCATION_NAME:=$(shell g.gisenv get=LOCATION_NAME)
 MAPSET:=$(shell g.gisenv get=MAPSET)
 
+###########
+# This calls g.mapset if needed
+# use like 
+# foo:
+#   $(call g.mapset,${location},${mapset})
+#############
 
+define g.mapset
+[[ `g.gisenv LOCATION_NAME` = "$1" && `g.gisenv MAPSET` = "$2" ]] || g.mapset --quiet location=$1 mapset=$2
+endef
+
+define g.mapset-c
+[[ `g.gisenv LOCATION_NAME` = "$1" && `g.gisenv MAPSET` = "$2" ]] || g.mapset --quiet -c location=$1 mapset=$2 && g.region -d
+endef
+
+# This should be deprecated, so we can alse run make routines that span
+# multiple mapsets.
+#
 # Check on whether the MAPSET is a day, month, or otherwise
 YYYY:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(([01]\d)(([0123]\d))?)?$$/ and print $$1;')
 MM:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(([01]\d)(([0123]\d))?)?$$/ and print $$3;')
 DD:=$(shell echo $(MAPSET) | perl -n -e '/^(20\d{2})(([01]\d)(([0123]\d))?)?$$/ and print $$5;')
-
-###################################################
-# Check for YYYY / MM / DD
-##################################################
-define hasYYYY
-ifndef YYYY
-$(error MAPSET  is not a YYYY*)
-endif
-endef
-
-define hasMM
-ifndef MM
-$(error MAPSET is not YYYY-MM*)
-endif
-endef
-
-define hasDD
-ifndef DD
-$(error MAPSET is not YYYY-MM-DD)
-endif
-endef
-
 
 # Shortcut Directories
 loc:=$(GISDBASE)/$(LOCATION_NAME)

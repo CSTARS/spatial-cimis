@@ -1,0 +1,63 @@
+* g.cimis
+
+** Testing g.cimis sec=goes
+
+We can run a test of the g.cimis program from grass. Here we are
+testing the ~sec=goes~ component.  This is the part that imports goes
+data into grass, reprojects it, and runs the solar process on it.
+
+We want to mimic the behavior of the incrontab, and operate on each
+incoming file one at a time.  The incoming data are located in
+~~cimis/CA~ directory.
+
+
+#+BEGIN_SRC bash
+day=20190511
+g.mapset location=goes17 mapset=cimis
+for i in ~cimis/${day}T????PST-B2.pgm; do
+  g.mapset mapset=${day};
+  g.cimis sec=goes cmd=import,goes_to_solar,solar
+done
+#+END_SRC
+
+
+** Testing g.solar_time.
+
+#+BEGIN_SRC bash
+g.solar_time cmd=sretr
+for m in $(g.list type=rast pattern='*PST-B2'); do 
+  dn=$(g.solar_time rast=$m cmd=daynight); 
+  ss=$(g.solar_time rast=$m cmd=risedayset); 
+  p=$(g.solar_time rast=$m cmd=prev); 
+  echo $m $dn $ss $p; 
+done
+#+END_SRC
+
+** Testing g.cimis sec=solar
+
+If we have a day in the solar mapset that has a number of cloud
+values, we can calculate solar for the entire day with the
+~daily_solar~ section.  This command loops through every raster image
+and calculates the order to run the r.heliosat commands.  Below is an
+example of running that command.
+
+#+BEGIN_SRC 
+day=20190510
+g.mapset location=solar mapset=$day
+g.cimis sec=daily_solar cmd=solar
+#+END_SRC
+
+On the development machine, that take about 25 minutes to process.
+
+Note, there is a trick about the calculations of the net radiation
+using either the daily_solar.mk or the goes.mk sections.  The values
+shouldn't change based on which is run.  So, you should be able to run
+the ~daily_solar~ command at the end of the day as a check to
+determine if all the instant values were calculated properly.
+
+This has real-world value.  Suppose you have run the solar
+calculations, but you discover there is one corrupt ~????PST-B2~ file.
+You can simply remove that file, and rerun the ~g.cimis
+sec=daily_solar cmd-solar~ command, and the corrected daily value will
+be calculated automatically.
+

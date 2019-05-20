@@ -1,4 +1,54 @@
-#! /bin/bash
+#! /usr/bin/env bash
+
+############################################################################
+#
+# MODULE:       g.solar_time (Grass 7.4.4)
+# AUTHOR(S):    Quinn Hart qjhart at ucdavis
+# PURPOSE:      To perform Spatial CIMIS calculations
+# COPYRIGHT:    (C) 2018-2019 by Quinn Hart
+#
+#               This program is free software under the GNU General Public
+#               License (>=v2). Read the file COPYING that comes with GRASS
+#               for details.
+#
+#############################################################################
+
+#%Module
+#%  description: Display various solar time variables for a solar mapset
+#%  keywords: CIMIS evapotranspiration
+#%End
+#%option
+#% key: cmd
+#% type: string
+#% description: Command: solpos | sretr | ssetr | daynight | prev | risedayset | day_parms | sretr_parms | ssetr_parms 
+#% multiple: no
+#% required: no
+#% guisection: Main
+#%end
+#%option G_OPT_R_MAP
+#% key: rast
+#% required: no
+#%end
+#%option G_OPT_M_MAPSET
+#% required: no
+#%end
+
+if  [ -z "$GISBASE" ] ; then
+    echo "You must be in GRASS GIS to run this program."
+    exit 1
+fi
+
+# save command line
+if [ "$1" != "@ARGS_PARSED@" ] ; then
+    CMDLINE=`basename "$0"`
+    for arg in "$@" ; do
+        CMDLINE="$CMDLINE \"$arg\""
+    done
+    export CMDLINE
+    exec g.parser "$0" "$@"
+fi
+
+g.message -d message="$CMDLINE"
 
 function fn2t() {
     local t;
@@ -17,7 +67,7 @@ function cmp() {
 }
 
 function day_parms() {
-    local m=$(g.gisenv MAPSET)
+    local m=${MAPSET}
     local y=${m%????}
     local md=${m#????}
     local m=${md%??}
@@ -80,14 +130,10 @@ function prev() {
     local t1=$(fn2t $1)
     local ti
     local prev
-    local pat
-    if [[ -z $2 ]]; then
-	pat='????PST-B2'
-    else
-	pat=$2
-    fi
-    for i in $(g.list type=rast pattern='????PST-B2' | sort); do
-	ti=${i%PST-B2}
+    local suffix=${1#????}
+
+    for i in $(g.list type=rast pattern="????${suffix}" | sort); do
+	ti=${i%${suffix}}
 	if [[ $ti < $t1 ]]; then
 	    prev=$i
 	else
@@ -123,38 +169,24 @@ function risedayset() {
 }
 
 # MAIN
-
-OPTS=`getopt --long sretr:,ssetr: -- g.ct "$@"`
-if [ $? != 0 ] ; then
-    echo "Bad Command Options." >&2 ;
-    exit 1 ;
-fi
-
-eval set -- "$OPTS"
-
-while true; do
-    case $1 in
-#	--sretr) SRETR=$2; shift 2;;
-#	--ssetr) SSTER=$2; shift 2 ;;
-	-- ) shift; break;;
-	*) shift; break;
-    esac
-done
-
-CMD=$1
-shift;
+CMD=${GIS_OPT_CMD}
+MAPSET=${GIS_OPT_MAPSET:-$(g.gisenv MAPSET)}
 
 case $CMD in
-     solpos | sretr | ssetr ) # Directory Commands
-	$CMD $@;
+    solpos | sretr | ssetr ) # Directory Commands
+	$CMD;
 	;;
-     daynight | prev | risedayset ) # Identifiers
-	$CMD $@;
+    day_parms | sretr_parms | ssetr_parms ) # Grass helpers
+	$CMD;
 	;;
-     day_parms | sretr_parms | ssetr_parms ) # Grass helpers
-	 $CMD $@;
+    daynight | prev | risedayset ) # Identifiers
+	if [[ -z ${GIS_OPT_RAST} ]]; then
+	    g.message "$CMD requires raster"
+	    exit 1;
+	fi;
+	$CMD ${GIS_OPT_RAST};
 	;;
     *)
-	echo  "$CMD not found";
+	g.message "$CMD not found";
 	;;
 esac

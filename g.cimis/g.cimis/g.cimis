@@ -1,8 +1,8 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 ############################################################################
 #
-# MODULE:       cg for GRASS 6
+# MODULE:       g.cimis (Grass 7.4.4)
 # AUTHOR(S):    Quinn Hart qjhart at ucdavis
 # PURPOSE:      To perform Spatial CIMIS calculations
 # COPYRIGHT:    (C) 2012 by Quinn Hart
@@ -44,15 +44,15 @@
 #% key: sec
 #% type: string
 #% description: Spatial CIMIS command section
-#% answer: cimis
+#% answer: g.cimis
 #% required: yes
 #% guisection: Main
 #%end
 #%option
-#% key: etc
+#% key: arg
 #% type: string
-#% description: Debug etc location 
-#% multiple: no
+#% description: Additional args to pass to make, (eg. files=foo)
+#% multiple: yes
 #% required: no
 #% guisection: Main
 #%end
@@ -60,7 +60,7 @@
 #% key: make
 #% type: string
 #% description: Make command
-#% answer: make --no-builtin-rules
+#% answer: make
 #% multiple: no
 #% required: no
 #% guisection: Main
@@ -111,17 +111,10 @@ exitprocedure()
 }
 trap "exitprocedure" 2 3 15
 
-if [ -z $GIS_OPT_ETC ] ; then
-    if [ -d ${GRASS_ADDON_ETC}/cg ] ; then
-	etc=${GRASS_ADDON_ETC}/cg
-    else
-	etc=${GISBASE}/etc/cg
-    fi
-else
-    etc=$GIS_OPT_ETC
-fi
+etc=${GRASS_ADDON_BASE}/etc/g.cimis
 
-make=${GIS_OPT_MAKE}
+make="${GIS_OPT_MAKE} --no-builtin-rules --no-builtin-variables"
+
 if [ $GIS_FLAG_N -eq 1 ] ; then
     make="${make} -n"
 fi
@@ -134,13 +127,14 @@ fi
 #http://stackoverflow.com/questions/3063507/list-goals-targets-in-gnu-make
 #make -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split($1,A,/ /);for(i in A)print A[i]}' 
 if [ $GIS_FLAG_L -eq 1 ] ; then
-    g.message -d message="${make} -I ${etc} -f ${etc}/${GIS_OPT_SEC}.mk -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split(\$1,A,/ /);for(i in A)print A[i]}' | sort -u"
-    eval "${make} -I ${etc} -f ${etc}/${GIS_OPT_SEC}.mk -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split(\$1,A,/ /);for(i in A)print A[i]}' | sort -u "
+    g.message -d message="${make} --include-dir=${etc} -f ${etc}/${GIS_OPT_SEC}.mk -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split(\$1,A,/ /);for(i in A)print A[i]}' | sort -u"
+    eval "${make} --include-dir=${etc} -f ${etc}/${GIS_OPT_SEC}.mk -qp | awk -F':' '/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split(\$1,A,/ /);for(i in A)print A[i]}' | sort -u "
 else
     if [ -n "$GIS_OPT_CMD" ] ; then
 	cmd=`echo ${GIS_OPT_CMD} | tr ',' ' '`
-	g.message -d "${make} -I ${etc} -f ${etc}/${GIS_OPT_SEC}.mk ${cmd}"
-	eval "${make} -I ${etc} -f ${etc}/${GIS_OPT_SEC}.mk ${cmd}"
+	args=$(echo ${GIS_OPT_ARG} | sed -e "s/\([^=]*\)=\([^,]*\)\(,\|\$\)/\1='\2' /g")
+	g.message -d "${make} --include=-dir=${etc} -f ${etc}/${GIS_OPT_SEC}.mk ${args} ${cmd}"
+	eval "${make} --include-dir=${etc} -f ${etc}/${GIS_OPT_SEC}.mk ${args} ${cmd}"
 	if [ $? -ne 0 ] ; then
 	    g.message -e "make failure" 
 	    exit 1

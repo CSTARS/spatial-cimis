@@ -13,3 +13,6 @@ default: script $(DSTFILES)
 $(ETC)/${PGM}/%: etc/% $(ETC)/${PGM}
 	$(INSTALL) $< $@
 
+# For bash Script
+$(SCRIPTDIR)/%: % | $(SCRIPTDIR)
+	$(INSTALL) $< $@
