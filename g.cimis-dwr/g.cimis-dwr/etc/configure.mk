@@ -7,7 +7,7 @@ ifndef GISBASE
 endif
 
 # GOES15 Parameters
-htdocs:=/var/www/goes15/cimis
+htdocs:=/var/www/cimis15
 state:=state@PERMANENT
 
 ##############  File Organization ################

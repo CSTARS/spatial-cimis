@@ -4,7 +4,7 @@ use JSON;
 use DBI;
 
 # Need to add to configurations
-my $zipdb=`g.gisenv get=cg_ZIPCODE_DB`;
+my $zipdb=`g.gisenv get=ZIPCODE_DB`;
 chomp $zipdb;
 my $dsn="dbi:SQLite:dbname=$zipdb";
 

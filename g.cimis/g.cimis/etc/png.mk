@@ -8,7 +8,7 @@ png.mk:=1
 
 # New one will be this
 daily_dir:=$(YYYY)/$(MM)/$(DD)
-htdocs:=/var/www/cimis
+htdocs:=/var/www/cimis17
 html:=$(htdocs)/$(daily_dir)
 
 .PHONY: info
@@ -16,48 +16,12 @@ info::
 	@echo png.mk
 	@echo html files to ${html}
 
-# PNG Writing Functions
-define d_map
-d.frame -e; \
-d.rast $1; \
-d.vect counties@PERMANENT type=boundary color=white fcolor=none; \
-d.font font=romand; \
-d.frame -c frame=legend at=7,52,2,17; \
-d.erase color=white; \
-d.legend -s raster=$1 color=black; \
-if [[ -n $3 ]]; then \
- d.frame -c frame=units at=2,7,2,17; \
- d.erase color=white; \
- echo $3 | d.text color=black size=60; \
-fi; \
-d.frame -c frame=title at=90,95,55,95; \
-d.erase color=white; \
-echo -e ".B 1\n$2" | d.text color=black size=60;
-endef
-
-define d_png
-d.mon -r; \
-sleep 1; \
-GRASS_WIDTH=500 \
-GRASS_HEIGHT=550 \
-GRASS_TRUECOLOR=TRUE \
-GRASS_BACKGROUND_COLOR=FFFFFF \
-d.mon start=png output=$1 &> /dev/null; \
-$(call d_map, $2, $3, $4) \
-d.mon stop=png &> /dev/null;
-endef
-
-# Don't inlcude RHx anymore
-#html_layers:= Rso Rs K Rnl Tdew ETo Tx Tn U2 mc_ETo_avg mc_ETo_err_3
 html_layers:= Rso Rs K Rnl Tdew ETo Tx Tn U2
 
-html: $(patsubst %,$(html)/%.png,$(html_layers)) $(patsubst %,$(html)/%.asc.gz,$(html_layers)) ${html}/station.csv ${html}/zipcode.csv
+html: $(patsubst %,$(html)/%.png,$(html_layers)) $(patsubst %,$(html)/%.asc.gz,$(html_layers)) ${html}/station.csv
 
 clean-html::
 	rm -rf $(html)
-
-${html}/zipcode.csv: ${etc}/zipcode.csv
-	cp $< $@
 
 ${html}/station.csv:${etc}/station.csv
 	cp $< $@
@@ -87,8 +51,7 @@ $(html)/$(1).png: $(rast)/$(1)
 	@[[ -d $(html) ]] || mkdir -p $(html);
 	@d.mon -r; sleep 1; \
 	$(call MASK) \
-	GRASS_WIDTH=500 GRASS_HEIGHT=550 \
-	GRASS_TRUECOLOR=TRUE GRASS_BACKGROUND_COLOR=FFFFFF \
+	GRASS_RENDER_WIDTH=2304 GRASS_RENDER_HEIGHT=2560 \
 	d.mon start=png output=${html}/$1.png &> /dev/null; \
 	d.frame -e; d.rast $1; \
 	d.vect counties@PERMANENT type=boundary color=white fcolor=none; \
@@ -97,30 +60,6 @@ $(html)/$(1).png: $(rast)/$(1)
 	 echo '$3' | d.text color=black at=2,2 size=3; \
 	fi; \
 	echo -e ".B 1\n$2" | d.text at=45,90 color=black size=4; \
-	d.mon stop=png &> /dev/null;\
-	$(call NOMASK)
-
-$(html)/$(1).png.old: $(rast)/$(1)
-	@echo $(1).png
-	@[[ -d $(html) ]] || mkdir -p $(html);
-	@d.mon -r; sleep 1; \
-	$(call MASK) \
-	GRASS_WIDTH=500 GRASS_HEIGHT=550 \
-	GRASS_TRUECOLOR=TRUE GRASS_BACKGROUND_COLOR=FFFFFF \
-	d.mon start=png output=${html}/$1.png &> /dev/null; \
-	d.frame -e; d.rast $1; \
-	d.font font=romand; \
-	d.frame -c frame=legend at=7,52,2,17; \
-	d.erase color=white; \
-	d.legend -s raster=$1 color=black; \
-	if [[ -n "$3" ]]; then \
-	 d.frame -c frame=units at=2,7,2,17; \
-	 d.erase color=white; \
-	 echo '$3' | d.text color=black size=60; \
-	fi; \
-	d.frame -c frame=title at=90,95,55,95; \
-	d.erase color=white; \
-	echo -e ".B 1\n$2" | d.text color=black size=60;
 	d.mon stop=png &> /dev/null;\
 	$(call NOMASK)
 

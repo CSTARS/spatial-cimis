@@ -9,7 +9,7 @@ my $xml;
 my $q=new CGI();
 
 # Need to set the proper GISDBASE for operation.
-$CG_GISDBASE='/data/cimis/gdb';
+$CG_GISDBASE='/app/cimis/gdb';
 
 my $date=$q->param('TIME');
 my $zipcode=$q->param('ZIPCODE');
@@ -25,7 +25,7 @@ my $fail_on_err=$q->param('FAIL_ON_ERR') || 'on_last';
 my $cmd;
 if (defined(param('REQUEST')) and (lc(param('REQUEST')) eq 'getfeatureinfo')) {
     $cmd=join(' ',
-	      ("grass --text $CG_GISDBASE/cimis/quinn --exec cg.cgi",
+	      ("grass --text $CG_GISDBASE/cimis/cimis --exec cg.cgi",
 	       ($item)?"item=$item":'',
 	       ($zipcode)?"zipcode=$zipcode":'',
 	       ($date)?"date=$date":'',
