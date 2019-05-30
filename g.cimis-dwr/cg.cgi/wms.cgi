@@ -9,7 +9,10 @@ my $xml;
 my $q=new CGI();
 
 # Need to set the proper GISDBASE for operation.
-$CG_GISDBASE='/app/cimis/gdb';
+my $mapset='/app/cimis/gdb1[57]/cimis/apache';
+# Try setting HOME for grass
+$ENV{HOME}='/home/apache';
+$ENV{LC_ALL}='en_US.UTF-8';
 
 my $date=$q->param('TIME');
 my $zipcode=$q->param('ZIPCODE');
@@ -25,7 +28,7 @@ my $fail_on_err=$q->param('FAIL_ON_ERR') || 'on_last';
 my $cmd;
 if (defined(param('REQUEST')) and (lc(param('REQUEST')) eq 'getfeatureinfo')) {
     $cmd=join(' ',
-	      ("grass --text $CG_GISDBASE/cimis/cimis --exec cg.cgi",
+	      ("grass --text $mapset --exec cg.cgi",
 	       ($item)?"item=$item":'',
 	       ($zipcode)?"zipcode=$zipcode":'',
 	       ($date)?"date=$date":'',
@@ -38,9 +41,9 @@ if (defined(param('REQUEST')) and (lc(param('REQUEST')) eq 'getfeatureinfo')) {
 	      )
 	);
 
-    print $cmd;
+#    print $cmd;
 
-    $xml=`$cmd`;
+    $xml=`$cmd 2>/dev/null`;
     my $status=200;
     if ($fail_on_err eq 'never') {
 	$status=200;

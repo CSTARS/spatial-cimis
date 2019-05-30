@@ -227,12 +227,15 @@ $xml->characters("\n");
 # Do zipcodes
 if (@zipcode) {
     my %dates;
+    my @zdate =map(join('-',substr($_,0,4),
+			substr($_,4,2),
+			substr($_,6,2)),@date);
     my %zipcodes;
     my $dbh = DBI->connect($dsn,"","");
     my $sql=sprintf
 	(
 	 "select * from zipcode_daily where d_date in (%s) and zipcode in (%s) order by d_date,zipcode;",
-	 join(',',map(qq{'$_'},@date)),
+	 join(',',map(qq{'$_'},@zdate)),
 	 join(',',map(qq{'$_'},@zipcode)));
 
     my $sth=$dbh->prepare($sql);
@@ -269,7 +272,7 @@ if (@zipcode) {
 	$xml->endTag;
 	$xml->characters("\n");
     }
-    my @missing_dates=grep(! ($dates{$_}),@date);
+    my @missing_dates=grep(! ($dates{$_}),@zdate);
     foreach my $d (@missing_dates) {
 	foreach my $z (sort keys %zipcodes) {
 	    $xml->emptyTag("DataPoint",date=>$d,zipcode=>$z,err=>'date_not_found');
