@@ -46,7 +46,7 @@ ${etc}/cloud_window:
 	[[ -d ${etc} ]] || mkdir ${etc};\
 	for i in $$$$(seq -14 0); do \
 	  m=$$$$(date --date="$1 + $$$$i days" +%Y%m%d); \
-	  if [[ -d ${solar.loc}/$$$$m ]]; then \
+	  if [[ -d ${GISDBASE}/${solar.loc}/$$$$m ]]; then \
 	    echo -n "$$$$m,";\
 	  fi;\
 	done | sed -e "s/,$$$$/\n/" > ${etc}/cloud_window;\

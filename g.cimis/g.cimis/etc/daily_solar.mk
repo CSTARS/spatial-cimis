@@ -32,4 +32,4 @@ info::
 # Below, we loop over all rasters and recalculate solar parameters
 # This is for redoing a complete day, not calculating data instantly.
 $(eval $(call mapset_targets,${MAPSET}))
-$(foreach f,${rasters},$(eval $(call next_solar_calc,$f,${MAPSET})))
+$(foreach f,${rasters},$(info B2:$f@${MAPSET}) $(eval $(call next_solar_calc,$f,${MAPSET})))
