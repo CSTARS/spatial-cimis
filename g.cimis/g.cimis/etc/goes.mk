@@ -50,12 +50,22 @@ $(eval rast:=${GISDBASE}/${solar.loc}/$(call f_mapset,$1)/cellhd)
 
 goes_to_solar::$(call f_solar_rast,$1)
 
+# We try and validate the data here, so that we do not propogate bad imagery
 $(call f_solar_rast,$1):$(call f_goes_rast,$1)
-	@$(call g.mapset-c,${solar.loc},$(call f_mapset,$1));\
-	g.region --quiet ${solar.region};\
-	r.proj --quiet location=${goes.loc} mapset=$(call f_mapset,$1) \
-	  input=$(call f_rastname,$1) method=${solar.proj.method};\
-	echo ${solar.loc}/$(call f_mapset,$1)/$(call f_rastname,$1)
+	@$(call g.mapset,${goes.loc},$(call f_mapset,$1));\
+	if [[ $$((  $$(eval $$(r.info -r $(call f_rastname,$1) ); echo $$min ) >  100 ||\
+	  $$(r.mask --quiet --overwrite  state_plus@500m;\
+	    r.stats --quiet -c  $(call f_rastname,$1) | head -1 | cut -d' ' -f  1;\
+	    r.mask --quiet -d ) > 100 )) == 1 ]];  \
+	then \
+	  $(call g.mapset-c,${solar.loc},$(call f_mapset,$1));\
+	  g.region --quiet ${solar.region};\
+	  r.proj --quiet location=${goes.loc} mapset=$(call f_mapset,$1) \
+	    input=$(call f_rastname,$1) method=${solar.proj.method};\
+	  echo ${solar.loc}/$(call f_mapset,$1)/$(call f_rastname,$1);\
+	else \
+	  echo $(call f_mapset,$1)/$(call f_rastname,$1) BAD DATA;\
+	fi;
 
 endef
 
