@@ -1,0 +1,7 @@
+# m h  dom mon dow   command
+50 23 * * *	~/bin/cimis-solar-data-check.sh > ~/logs/cimis-solar-data-check.$(date --iso).log 2>&1
+55 23 * * * 	~/bin/cimis-solar-data-check.sh all > ~/logs/cimis-solar-data-check.$(date --iso)-all.log 2>&1
+0 1 * * *	~/bin/cimis-solar-clean-cron.sh > ~/logs/cimis-solar-clean-cron.$(date --iso --date=last-week) 2>&1
+0 4 * * *	find ~/CA -mtime +14 -exec rm {} \;
+22 3 * * *	~/bin/cimis-ETo-goes17-UCD.sh
+

@@ -1,0 +1,1 @@
+/home/cimis/CA IN_MOVED_TO grass /home/cimis/gdb/goes17/cimis --exec g.cimis sec=goes cmd=import,solar arg="files=$@/$#"  >> ~/logs/g.cimis-goes-solar.$(date --iso).log 2>&1
