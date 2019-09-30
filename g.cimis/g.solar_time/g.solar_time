@@ -143,6 +143,23 @@ function prev() {
     echo $prev
 }
 
+function next() {
+    local t1=$(fn2t $1)
+    local ti
+    local next
+    local suffix=${1#????}
+
+    for i in $(g.list type=rast pattern="????${suffix}" | sort -r); do
+	ti=${i%${suffix}}
+	if [[ $ti > $t1 ]]; then
+	    next=$i
+	else
+	    break
+	fi
+    done
+    echo $next
+}
+
 function risedayset() {
     local dn
     local pdn
@@ -179,7 +196,7 @@ case $CMD in
     day_parms | sretr_parms | ssetr_parms ) # Grass helpers
 	$CMD;
 	;;
-    daynight | prev | risedayset ) # Identifiers
+    daynight | prev | next | risedayset ) # Identifiers
 	if [[ -z ${GIS_OPT_RAST} ]]; then
 	    g.message "$CMD requires raster"
 	    exit 1;
