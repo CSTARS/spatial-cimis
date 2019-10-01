@@ -94,8 +94,8 @@ etc:=$(loc)/$(MAPSET)/etc
 SQLITE:=sqlite3
 db.connect.database:=${loc}/${MAPSET}/sqlite.db
 
-.PHONY: info
-info::
+.PHONY: infox
+infox::
 	@echo "#### g.gisenv: ####" 
 	@g.gisenv;
 	@echo "#### g.gisenv: ####" 
