@@ -39,7 +39,7 @@ $(eval heliosat.$1:=elevin=Z@500m linkein=${linkeT} latitude=latitude@500m ssha=
 
 cloud_window::${etc}/cloud_window
 
-clean-cloud_window:
+clean-cloud_window::
 	@rm ${etc}/cloud_window
 
 ${etc}/cloud_window:
@@ -73,6 +73,7 @@ endef
 # These get run for every timestep (in daytime)
 define _everytime
 $(eval rast:=${GISDBASE}/${solar.loc}/$3/cellhd)
+$(eval etc:=${GISDBASE}/${solar.loc}/$3/etc)
 
 $(eval cloud:=$(call fn_cloud,$1))
 $(eval clear_sky:=$(call fn_clear_sky,$1))
@@ -106,7 +107,6 @@ ${rast}/${p}: ${rast}/$1 ${etc}/cloud_window
 	maps=$$$$(g.list separator=',' type=rast mapset=$$$$(cat ${etc}/cloud_window) pattern=$1 | sed -e "s/^/'/" -e "s/,/','/g" -e "s/$$$$/'/");\
 	${calc} expression="'${p}'=min($$$${maps})";\
 	echo -n '${p} '
-
 
 ${rast}/${cloud}: ${rast}/${p} ${etc}/max/$1
 	@$(call g.mapset,${solar.loc},$3);\
@@ -147,7 +147,7 @@ $(call _everytime,$1,$2,$3)
 ${rast}/${cloud_sky}: ${rast}/sretr-Gi ${rast}/${cloud} ${rast}/${clear_sky}
 	@$(call g.mapset,${solar.loc},$3);\
 	${calc} expression="'${cloud_sky}'=('${clear_sky}'-'sretr-Gi')*'${cloud}'";\
-	echo ' ${cloud_sky}'
+	echo -n ' ${cloud_sky}'
 
 endef
 
@@ -194,9 +194,9 @@ ${rast}/ssetr-Gi:
 	@$(call g.mapset,${solar.loc},$3);\
 	r.heliosat -i `g.solar_time cmd=ssetr_parms` ${heliosat.$3};\
 	g.rename raster=_hel_Gci`g.solar_time cmd=ssetr`,ssetr-Gi;\
-	echo 'ssetr-Gi';
+	echo -n ' ssetr-Gi';
 
-${rast}/ssetr-G: ${rast}/${cloud} ${rast}/${cloud_sky} ${rast}/ssetr-Gi
+${rast}/ssetr-G: ${rast}/${prev_cloud} ${rast}/${prev_cloud_sky} ${rast}/ssetr-Gi
 	@$(call g.mapset,${solar.loc},$3);\
 	${calc} expression="'ssetr-G'=('ssetr-Gi'-'${prev_clear_sky}')*'${prev_cloud}'+'${prev_cloud_sky}'";\
 	echo -n ' ssetr-G'

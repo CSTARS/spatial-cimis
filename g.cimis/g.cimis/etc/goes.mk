@@ -147,7 +147,6 @@ endef
 define _add_predawn
 endef
 
-
 define _add_sunrise
 $(eval $(call _goes_to_solar,$1,$2) $(call _sunrise,$2,$3,$1))
 endef
@@ -180,15 +179,18 @@ $(foreach m,${all_mapsets},$(eval $m.daynight:=$(foreach f,$(patsubst %PST-B2,%,
 
 # And now find sunrise and sunset.  Compare to the previous time / and it's type
 $(foreach m,${all_mapsets},$(eval $m.prev:=0000 ${$m.files}))
-$(foreach m,${all_mapsets},$(eval $m.prev_daynight:=x ${$m.daynight}))
+$(foreach m,${all_mapsets},$(eval $m.prev_daynight:=predawn ${$m.daynight}))
 
 $(foreach m,${all_mapsets},$(eval $m.ranges:=$(foreach i,$(shell seq 1 $(words ${$m.files})),$(if $(filter predawn,$(word $i,${$m.daynight})),predawn:,$(if $(filter day,$(word $i,${$m.daynight})),$(if $(filter predawn,$(word $i,${$m.prev_daynight})),sunrise,day),$(if $(filter day,$(word $i,${$m.prev_daynight})),sunset,night))):$(word $i,${$m.files}):$(word $i,${$m.prev}))))
 
 # And finally create the proper rules, first mapset targets
 $(foreach m,${all_mapsets},$(eval $(call mapset_targets,$m)))
+
 # Then file imports
 $(foreach f,$(sort $(filter %PST-B2.pgm,${files})),$(eval $(call _import,$f)))
+
 # And also all the projection / and solar calculations
 $(foreach m,${all_mapsets},$(foreach f,${$m.ranges},$(call _add_$(word 1,$(subst :, ,$f)),$m,$(word 2,$(subst :, ,$f)),$(word 3,$(subst :, ,$f)))))
+
 # The user can provide a add-sunset parameter to put in a pseudo end of day if needed
-$(if ${add-sunset},$(foreach m,${all_mapsets},$(if,$(filter-out night,$(lastword ${$m.daynight})),$(call _add_sunset,$m,${$m.ssetr},$(lastword ${$m.files})))))
+$(if ${add-sunset},$(foreach m,${all_mapsets},$(if $(filter-out night,$(lastword ${$m.daynight})),$(info _add_sunset,$m,${$m.ssetr},$(lastword ${$m.files})) $(call _add_sunset,$m,${$m.ssetr},$(lastword ${$m.files})))))
