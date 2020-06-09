@@ -1,0 +1,254 @@
+#! /usr/bin/perl -w
+package main;
+use Date::Calc (qw/Today Add_Delta_Days/);
+use LWP;
+use JSON;
+use Geo::Proj4;
+
+sub stations {
+  my $config = shift;
+  my $ua = new LWP::UserAgent();
+  $ua->default_header('Accept' => "application/json");
+
+#  my $proj = Geo::Proj4->new(init => "espg:3310");
+#+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs 
+  my $proj = Geo::Proj4->new
+      (proj=>"aea",lat_1=>34, lat_2=>40.5, lat_0=>0, lon_0=>-120, 
+       x_0=>0, y_0=>-4000000, ellps=>'GRS80', datum=>'NAD83', 
+       units=>'m',no_defs=>'');
+
+  my $link=sprintf
+      (
+       '%s/station?appKey=%s',
+       $config->{'api'},$config->{'appKey'}
+      );
+    
+  my $res = $ua->get($link);
+  die sprintf("%s failed: s",$link,$res->status_line) 
+      unless ($res->is_success);
+  my $json=decode_json $res->decoded_content;
+
+  my $stations={};
+  foreach (@{$json->{Stations}}) {
+      my $id=$_->{StationNbr};
+      my ($hms_lat,$lat)=split('\s*/\s*',$_->{HmsLatitude});
+      my ($hms_lon,$lon)=split('\s*/\s*',$_->{HmsLongitude});
+      my($e,$n)=$proj->forward($lat,$lon);
+      $_->{'ascii-lat'}=$hms_lat;
+      $_->{'ascii-lng'}=$hms_lon;
+      $_->{'decimal-lat'}=$lat;
+      $_->{'decimal-lng'}=$lon;
+      $_->{east}=$e;
+      $_->{north}=$n;
+      $stations->{$id}=$_ if ($_->{IsActive} eq 'True' and $_->{StationNbr} != 155 and $_->{StationNbr} != 183);
+#      $stations->{$id}=$_ if ($_->{IsActive} eq 'True');
+  }
+  $stations;
+}
+
+sub data {
+  my $config=shift;
+
+  my $ua = new LWP::UserAgent();
+  $ua->default_header('Accept' => "application/json");
+
+  my $link=sprintf
+      (
+       '%s/data?appKey=%s&targets=%s&dataItems=%s&startDate=%s&endDate=%s&unitOfMeasure=M',
+       $config->{'api'},$config->{'appKey'},
+       $config->{stationIds},$config->{items},
+       $config->{date},$config->{date}
+      );
+
+  my $res = $ua->get($link);
+  die sprintf("%s failed: s",$link,$res->status_line) unless ($res->is_success);
+  my $json=decode_json $res->decoded_content;
+
+  my $h={};
+  foreach(@{$json->{Data}->{Providers}->[0]->{Records}}) {
+      $h->{$_->{Station}}=$_;
+  }
+  $h;
+}
+
+sub makeStations {
+    my $stations = shift;
+    my @cols=('station integer',
+	      'x double precision','y double precision','z double precision',
+	      'Name text','City text','RegionalOffice text',
+	      'County text','GroundCover varchar(12)',
+	      'ascii_lat varchar(32)','ascii_lng varchar(32)',
+	      'latitude double precision','longitude double precision',
+	      'ConnectDate date','DisconnectDate date',
+	      'isActive varchar(1)','isEtoStation varchar(1)'
+	);
+    @cols=('station integer',
+	      'x double precision','y double precision','z double precision',
+	      'Name text','City text','RegionalOffice text',
+	      'County text','GroundCover varchar(12)',
+	      'isActive varchar(1)','isEtoStation varchar(1)'
+	);
+
+    my $cmd=sprintf("v.in.ascii %s out=%s cat=1 x=2 y=3 z=4 columns='%s'",
+		    $ENV{GIS_FLAG_OVERWRITE}?'--overwrite':'',
+		    $config->{output},join(',',@cols));
+    
+    open(V_IN_ASCII, "| $cmd") or die "Couldn't fork: $!\n";
+    foreach (sort {$a<=>$b} keys %$stations) {
+	my $s=$stations->{$_};
+	
+	# Elevation should be in meters
+	my @v=($_,$s->{east},$s->{north},$s->{Elevation}*0.3048,
+	       $s->{Name},$s->{City}||'',$s->{RegionalOffice}||'',
+	       $s->{County}||'',$s->{GroundCover}||'',
+#	       $s->{'ascii-lat'},$s->{'ascii-lng'},
+#	       $s->{'decimal-lat'},$s->{'decimal-lng'},
+#	       $s->{'ConnectDate'}||'',$s->{'DisconnectDate'}||'',
+	       $s->{'isActive'}||'',$s->{'isEtoStation'}||'F'
+	    );
+	
+#	print join("|",@v),"\n";
+	print V_IN_ASCII join("|",@v),"\n";
+    }
+    close(V_IN_ASCII) or die "Couldn't close: $!\n";
+}
+
+
+#%Module
+#%  description: Get Daily Vector from et.water.ca.gov using JSON services
+#%  keywords: CIMIS,etxml,evapotranspiration
+#%End
+#%flag
+#% key: stations
+#% description: Output Stations
+#%end
+#%flag
+#% key: overwrite
+#% description: Overwrite
+#%end
+#%option
+#% key: api
+#% type: string
+#% description: URL of water API
+#% answer: http://et.water.ca.gov/api
+#% required : yes
+#%end
+#%option
+#% key: output
+#% type: string
+#% gisprompt: new,vector,vector
+#% description: Output Vector
+#% answer: et
+#% required : yes
+#%end
+#%option
+#% key: items
+#% type: string
+#% description: Variables to include
+#% multiple: yes
+#% answer: day-asce-eto,day-precip,day-sol-rad-avg,day-vap-pres-avg,day-air-tmp-max,day-air-tmp-min,day-air-tmp-avg,day-rel-hum-max,day-rel-hum-min,day-rel-hum-avg,day-dew-pnt,day-wind-spd-avg
+#% required : yes
+#%end
+#%option
+#% key: stationIds
+#% type: string
+#% description: Stations to include
+#% multiple: yes
+#% required : no
+#%end
+#%option
+#% key: date
+#% type: string
+#% description: Measurement date
+#% multiple: no
+#% required : yes
+#%end
+#%option
+#% key: appkey
+#% type: string
+#% description: ET Application Key.  If not specified look in g.gisenv ET_APPKEY
+#% multiple: no
+#% required : no
+#%end
+
+if (0) {    # TESTING
+    $ENV{GISBASE}=1;
+    $ARGV[0]='@ARGS_PARSED@';
+    $ENV{GIS_OPT_API}='http://et.water.ca.gov/api';
+    $ENV{GIS_OPT_OUTPUT}='station_et';
+    $ENV{GIS_OPT_DATE}='2013-10-10';
+    $ENV{GIS_OPT_ITEMS}='day-air-tmp-min,day-air-tmp-max,day-wind-spd-avg,day-rel-hum-max,day-dew-pnt';
+    $ENV{GIS_OPT_APPKEY}='AAFDD842-A8DC-460B-9EFF-392030336CB6';
+}
+
+
+if ( !$ENV{'GISBASE'} ) {
+    die "You must be in GRASS GIS to run this program.\n";
+}
+
+if ($ARGV[0] ne '@ARGS_PARSED@') {
+    my $arg = "";
+    for (my $i=0; $i < @ARGV;$i++) {
+        $arg .= " $ARGV[$i] ";
+    }
+    system("$ENV{GISBASE}/bin/g.parser $0 $arg");
+    exit;
+}
+
+my $mapset=`g.gisenv MAPSET`;
+
+chomp $mapset;
+
+# These are the command line options
+$config={};
+$config->{api}=$ENV{GIS_OPT_API};
+$config->{output}=$ENV{GIS_OPT_OUTPUT};
+$config->{date}=$ENV{GIS_OPT_DATE}||$mapset;
+$config->{items}=$ENV{GIS_OPT_ITEMS};
+$config->{'appKey'}=$ENV{GIS_OPT_APPKEY}||`g.gisenv ET_APPKEY`;
+chomp($config->{'appKey'});
+
+my $stations = stations($config);
+
+$config->{stationIds}=$ENV{GIS_OPT_STATIONIDS} ||
+    join(',',sort {$a <=> $b} keys %$stations);
+
+if ($ENV{GIS_FLAG_S}) {
+    makeStations($stations);
+} elsif ($config->{date} and $config->{items}) {
+    # get columns
+    my @cols=('station integer','x double precision','y double precision','z double precision','date varchar(10)');
+    foreach (split(',',$config->{items})) {
+	my $c=$_;
+	$c=~s/-/_/g;
+	push @cols,"$c double precision","${c}_qc varchar(1)"; 
+    }
+    my $items = data($config);
+    my $cmd=sprintf("v.in.ascii %s out=%s cat=1 x=2 y=3 z=4 columns='%s'",
+		    $ENV{GIS_FLAG_OVERWRITE}?'--overwrite':'',
+		    $config->{output},join(',',@cols));
+    system "g.message -d message=\"$cmd\"";
+    open(V_IN_ASCII, "| $cmd") or die "Couldn't fork: $!\n";
+    foreach (sort {$a<=>$b} keys %$items) {
+	my $s=$stations->{$_};
+	my $i=$items->{$_};
+	# Elevation should be in meters
+	my @v=($_,$s->{east},$s->{north},$s->{Elevation}*0.3048,$i->{Date});
+	foreach my $di (split(',',$config->{items})) {
+	    $di=~s/(^|-)(.)/uc($2)/eg;
+	    my $v=$i->{$di};
+	    my $q=$v->{Qc};
+	    my $val=$v->{Value};
+	    unless (defined($val)) {
+		printf STDERR "%s:%s:%s\n",$_,$di,$q;
+	    }
+	    $val='' unless defined($val);
+#		$q='K' unless defined($q);
+#		$q='K' if ($q eq '');
+	    $q='K' if ($q eq ' ');
+	    push @v,$val,$q;
+	}
+	print V_IN_ASCII join("|",@v),"\n";
+    }
+    close(V_IN_ASCII) or die "Couldn't close: $!\n";
+}

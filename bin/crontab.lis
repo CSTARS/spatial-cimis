@@ -1,0 +1,32 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+MAILTO=qjhart@ucdavis.edu
+SHELL=/bin/bash
+PATH=~/bin:/usr/local/bin:/usr/bin:/bin
+# 
+# m h  dom mon dow   command
+#@daily (. /etc/default/cg; find $CG_BASE/gdb/GOES15/*  -maxdepth 1 -daystart -name '20??-??-??T????' -mtime +21 -print0 | xargs -0 rm -rf )
+#@daily (. /etc/default/cg; find $CG_BASE/VIP/* -daystart -mtime +21 -print0 | xargs -0 rm )
+#15 9,12,15,18,21 * * * ~/bin/cg.grass.script ~/grass/scripts/cg.ca_daily_vis.rc ca_daily_vis/$(date --iso)
+#40 3,4,5,7,9,11 * * * ~/bin/cg.grass.script ~/grass/scripts/cg.daily.rc
+20 3-8 * * * ~/bin/cg.pull >> ~/logs/cg.pull.$(date --iso --date=yesterday).log 2>&1
+30 3-8 * * * ~/bin/cg.grass.script ~/bin/cg.daily.output >> ~/logs/cg.daily.output.$(date --iso --date=yesterday).log 2>&1
+10 4,7 * * * ( cd /opt/cimis-mobile/; ./import.sh )
