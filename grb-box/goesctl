@@ -1,2 +1,0 @@
-#!/bin/bash
-make --silent --directory=/home/quinn/spatial-cimis/grb-box -f goesctl.mk "$@"
