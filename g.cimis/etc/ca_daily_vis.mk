@@ -65,21 +65,6 @@ ${VIP}/$3:
 
 endef
 
-# define add_one 
-# ca-daily-vis::${ca-daily-vis-loc}/${date}/cellhd/vis$1
-
-# ${ca-daily-vis-loc}/${date}/cellhd/vis$1:
-# 	@if [[ -f ${goes-loc}/$2/cellhd/ch1 ]]; then \
-# r.proj input=ch1 mapset=$2 location=$(notdir ${goes-loc}) output=temp 2>/dev/null > /dev/null;\
-# if [[ $$$$? == 0 ]]; then \
-#   r.mapcalc vis$1=0.585454025*temp-16.9781625;\
-# fi;\
-#   g.mremove --q -f rast=temp;\
-# else\
-#    echo $2 or ch1@$2 not found;\
-# fi;
-# endef
-
 # hr-rast:=$(patsubst %,${ca-daily-vis-loc}/${date}/cellhd/vis%,${before})
 
 .PHONY: info
@@ -92,8 +77,3 @@ info::
 	@echo "before:${before}"
 
 $(foreach i,${before},$(eval $(call onehour,$i,$(shell date --date='${date} $i ${TZ}' --utc +%Y-%m-%dT%H%M),$(shell date --date='${date} $i ${TZ}'  -u +'%m%d%H%M\ GOES-15\ Imager\ Complete\ %a\ %d-%b-%Y\ %H%M.VIP'))))
-
-
-
-
-
