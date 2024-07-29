@@ -108,7 +108,7 @@ into GRASS.
 ```
 cd solar 
 g.mapset 20180801
-make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar;
+
 ```
 The make command will process the day's raw data and produce the necessary net radiation maps.  Once the calculation
 has finished you can run the `g.list rast` command to verify you see the following rasters with the `-G` extension were
@@ -164,21 +164,6 @@ for m in  201808??;do x=`g.list type=rast pattern=ssetr-G mapset=$m`;echo $m  $x
 This list shows that days 10/2, 10/3, 10/7 and 10/8 did not have solar calculations.  In this case this is a known
 GOES16 satellite outage due to solar activity so there is no data available for those days.
 
-But if you check a month and see no solar calculations (no `ssetr-g` rasters exist) you can process an entire
-months of raw data using the following loop.
-
-```
-for m in 201810??;do echo $m;  
-  g.mapset $m; 
-  make --directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar;
-done 
-```
-
-Note that using the `-n` switch will act as a dry run and show you what needs to be done without actually
-executing the calculation for that day.
-```
-make –directory=~/spatial-cimis/g.cimis/etc/ -f solar.mk solar -n
-```
 
 ### ETo Calculation
 Once the solar calculation for the day is complete run the final ETo calculation.

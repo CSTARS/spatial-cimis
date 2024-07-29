@@ -4,7 +4,7 @@ PGM = g.cimis
 
 include $(MODULE_TOPDIR)/include/Make/Script.make
 
-ETCFILES = goes.mk
+ETCFILES := $(shell cd etc && echo *)
 DSTFILES := $(patsubst %,$(ETC)/g.cimis/%,$(ETCFILES))
 
 default: script $(DSTFILES)
